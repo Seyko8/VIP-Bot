@@ -16,6 +16,22 @@ bot.command('close', handleClose);
 bot.action(/^redeem$/, handleAction);
 bot.action(/^(accept|deny|ticket)_\d+$/, handleAction);
 
+// ✅ **Neu: Buttons für 25€ & 100€**
+bot.action('redeem_25', async (ctx) => {
+    console.log(`🔍 25€ Code angefordert von User: ${ctx.from.id}`);
+    await ctx.reply(MESSAGES.SEND_25_CODE);
+});
+
+bot.action('redeem_100', async (ctx) => {
+    console.log(`🔍 100€ Code angefordert von User: ${ctx.from.id}`);
+    await ctx.reply(MESSAGES.SEND_100_CODE);
+});
+
+bot.action('redeem', async (ctx) => {
+    console.log(`🔍 50€ Code angefordert von User: ${ctx.from.id}`);
+    await ctx.reply(MESSAGES.SEND_CODE);
+});
+
 bot.on('message', async (ctx) => {
     if (ctx.message.from.id === ctx.botInfo.id) {
         return;
@@ -33,7 +49,9 @@ bot.catch((err, ctx) => {
 });
 
 bot.launch().then(() => {
+    console.log("✅ Bot läuft...");
 }).catch(err => {
+    console.error("❌ Fehler beim Starten des Bots:", err);
 });
 
 process.once('SIGINT', () => bot.stop('SIGINT'));
