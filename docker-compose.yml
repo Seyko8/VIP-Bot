@@ -3,7 +3,7 @@ version: '3.8'
 services:
   bot:
     build: .
-      environment:
+    environment:
       - BOT_TOKEN=${BOT_TOKEN}
       - ADMIN_GROUP_ID=${ADMIN_GROUP_ID}
       - MONGODB_URI=${MONGODB_URI}
@@ -13,9 +13,9 @@ services:
       - DB_NAME=${DB_NAME}
       - DB_USER=${DB_USER}
       - DB_PASSWORD=${DB_PASSWORD}
-      - GROUP_ID_100=${GROUP_ID_100}
-      - GROUP_ID_50=${GROUP_ID_50}
-      - GROUP_ID_25=${GROUP_ID_25}
+      - GROUP_ID_100=${GROUP_ID_100}  # ✅ Gruppen-ID für 100€ Codes
+      - GROUP_ID_50=${GROUP_ID_50}    # ✅ Gruppen-ID für 50€ Codes
+      - GROUP_ID_25=${GROUP_ID_25}    # ✅ Gruppen-ID für 25€ Codes
     depends_on:
       - db
     restart: unless-stopped
@@ -31,4 +31,4 @@ services:
     restart: unless-stopped
 
 volumes:
-  postgres_data: 
+  postgres_data:
