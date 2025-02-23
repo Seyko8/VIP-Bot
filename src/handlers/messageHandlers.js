@@ -1,7 +1,7 @@
 const { Markup } = require('telegraf');
 const { MESSAGES } = require('../constants');
 const { getOrCreateTopic } = require('../utils/topic');
-const { createInviteLink } = require('../utils/inviteLink'); // ✅ Hier wird die Invite-Funktion verwendet
+const { createInviteLink } = require('../utils/inviteLink'); // ✅ Invite-Funktion importiert
 const Ticket = require('../models/ticket');
 const { safeSendMessage, safeSendPhoto, safeSendDocument, safeSendVideo } = require('../utils/messageHandler');
 const { userLastCodeType } = require('./actionHandlers'); // ✅ Code-Typ Speicher importieren
@@ -120,7 +120,33 @@ const handlePrivateMessage = async (ctx) => {
             });
             await safeSendMessage(ctx, ctx.chat.id, MESSAGES.MESSAGE_FORWARDED);
         }
-    } catch (error) { }
+    } catch (error) {
+        console.error("❌ Fehler bei der Verarbeitung einer Support-Nachricht:", error);
+    }
+};
+
+// ✅ **Support-Handler für Support-Tickets**
+const handleSupportMessage = async (ctx) => {
+    if (!ctx.message.text) return;
+
+    console.log("📩 Support-Ticket wird erstellt!");
+
+    const threadId = await getOrCreateTopic(ctx, ctx.from.id);
+
+    if (!threadId) {
+        console.log("❌ Fehler beim Erstellen des Tickets!");
+        await safeSendMessage(ctx, ctx.chat.id, MESSAGES.ERROR_CREATING_TICKET);
+        return;
+    }
+
+    const message = `📩 **Support-Ticket erstellt**\n\n` +
+        `👤 **Benutzer:** ${ctx.from.first_name} (@${ctx.from.username || 'none'})\n` +
+        `🆔 **User ID:** ${ctx.from.id}\n` +
+        `💬 **Nachricht:**\n${ctx.message.text}`;
+
+    console.log("📨 Ticket an Admin-Gruppe gesendet!");
+    await safeSendMessage(ctx, process.env.ADMIN_GROUP_ID, message, { message_thread_id: threadId });
+    await safeSendMessage(ctx, ctx.chat.id, MESSAGES.TICKET_CREATED);
 };
 
 // ✅ **Funktionen exportieren**
