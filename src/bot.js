@@ -1,7 +1,7 @@
 const { Telegraf, Markup } = require('telegraf');
 const { MESSAGES } = require('./constants');
 const { handleStart, handleClose } = require('./handlers/commandHandlers');
-const { handleAction } = require('./handlers/actionHandlers');
+const { handleAction, userLastCodeType } = require('./handlers/actionHandlers'); // ✅ Code-Typ speichern
 const { handlePrivateMessage, handleSupportMessage } = require('./handlers/messageHandlers');
 const rateLimitMiddleware = require('./middleware/rateLimit');
 require('dotenv').config();
@@ -16,17 +16,28 @@ bot.command('close', handleClose);
 bot.action(/^redeem$/, handleAction);
 bot.action(/^(accept|deny|ticket)_\d+$/, handleAction);
 
-// ✅ Neue Buttons: FAQ-Pakete, 25€ Code, 100€ Code, Code einlösen, Support
-bot.action('faq_packages', async (ctx) => {
-    await ctx.reply(MESSAGES.FAQ_TEXT);
-});
-
+// ✅ **KORRIGIERT: Code-Typ speichern für 25€, 50€, 100€**
 bot.action('redeem_25', async (ctx) => {
+    console.log(`🔍 25€ Code angefordert von User: ${ctx.from.id}`);
+    userLastCodeType.set(ctx.from.id, "25€"); // ✅ Code-Typ speichern
     await ctx.reply(MESSAGES.SEND_25_CODE);
 });
 
 bot.action('redeem_100', async (ctx) => {
+    console.log(`🔍 100€ Code angefordert von User: ${ctx.from.id}`);
+    userLastCodeType.set(ctx.from.id, "100€"); // ✅ Code-Typ speichern
     await ctx.reply(MESSAGES.SEND_100_CODE);
+});
+
+bot.action('redeem', async (ctx) => {
+    console.log(`🔍 50€ Code angefordert von User: ${ctx.from.id}`);
+    userLastCodeType.set(ctx.from.id, "50€"); // ✅ Code-Typ speichern
+    await ctx.reply(MESSAGES.SEND_CODE);
+});
+
+// ✅ **FAQ & Support Knopf**
+bot.action('faq_packages', async (ctx) => {
+    await ctx.reply(MESSAGES.FAQ_TEXT);
 });
 
 bot.action('ticket', async (ctx) => {
@@ -50,7 +61,9 @@ bot.catch((err, ctx) => {
 });
 
 bot.launch().then(() => {
+    console.log("✅ Bot läuft...");
 }).catch(err => {
+    console.error("❌ Fehler beim Starten des Bots:", err);
 });
 
 process.once('SIGINT', () => bot.stop('SIGINT'));
