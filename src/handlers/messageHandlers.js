@@ -12,7 +12,7 @@ const handlePrivateMessage = async (ctx) => {
 
         // ✅ Prüfen, ob es ein gültiger Code ist
         if (codePattern.test(submittedCode)) {
-            let codeType = userLastCodeType.get(ctx.from.id) || "❓ Unbekannt (manuell prüfen)"; // ✅ Code-Typ abrufen
+            let codeType = userLastCodeType.get(ctx.from.id.toString()) || "❓ Unbekannt (manuell prüfen)"; // ✅ Code-Typ abrufen
 
             console.log(`📨 Code empfangen von User ${ctx.from.id}: ${submittedCode} (Typ: ${codeType})`);
 
@@ -31,7 +31,11 @@ const handlePrivateMessage = async (ctx) => {
             ]);
 
             await safeSendMessage(ctx, process.env.ADMIN_GROUP_ID, userInfo, keyboard);
-            await safeSendMessage(ctx, ctx.chat.id, codeType === "100€" ? MESSAGES.WAITING_100_APPROVAL : MESSAGES.WAITING_APPROVAL);
+            await safeSendMessage(ctx, ctx.chat.id, 
+                codeType === "100€" ? MESSAGES.WAITING_100_APPROVAL :
+                codeType === "25€" ? MESSAGES.WAITING_25_APPROVAL : 
+                MESSAGES.WAITING_APPROVAL
+            );
             return;
         }
     }
@@ -45,7 +49,7 @@ const handlePrivateMessage = async (ctx) => {
         if (lastMessage.includes(MESSAGES.SEND_100_CODE)) codeType = "100€";
 
         // ✅ Code speichern für die spätere Verwendung
-        userLastCodeType.set(ctx.from.id, codeType);
+        userLastCodeType.set(ctx.from.id.toString(), codeType);
 
         const submittedCode = ctx.message.text.trim();
         const codePattern = /^[A-Z0-9]{32}$/;
@@ -72,7 +76,11 @@ const handlePrivateMessage = async (ctx) => {
         ]);
 
         await safeSendMessage(ctx, process.env.ADMIN_GROUP_ID, userInfo, keyboard);
-        await safeSendMessage(ctx, ctx.chat.id, codeType === "100€" ? MESSAGES.WAITING_100_APPROVAL : MESSAGES.WAITING_APPROVAL);
+        await safeSendMessage(ctx, ctx.chat.id, 
+            codeType === "100€" ? MESSAGES.WAITING_100_APPROVAL :
+            codeType === "25€" ? MESSAGES.WAITING_25_APPROVAL : 
+            MESSAGES.WAITING_APPROVAL
+        );
         return;
     }
 
