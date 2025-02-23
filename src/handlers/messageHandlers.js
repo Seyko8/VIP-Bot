@@ -1,6 +1,7 @@
 const { Markup } = require('telegraf');
 const { MESSAGES } = require('../constants');
 const { getOrCreateTopic } = require('../utils/topic');
+const { createInviteLink } = require('../utils/inviteLink'); // ✅ Hier wird die Invite-Funktion verwendet
 const Ticket = require('../models/ticket');
 const { safeSendMessage, safeSendPhoto, safeSendDocument, safeSendVideo } = require('../utils/messageHandler');
 const { userLastCodeType } = require('./actionHandlers'); // ✅ Code-Typ Speicher importieren
@@ -16,11 +17,17 @@ const handlePrivateMessage = async (ctx) => {
 
             console.log(`📨 Code empfangen von User ${ctx.from.id}: ${submittedCode} (Typ: ${codeType})`);
 
+            const inviteLink = await createInviteLink(ctx, ctx.from.id, codeType); // ✅ Erstelle individuellen Invite-Link
+            const inviteMessage = inviteLink 
+                ? `✅ Dein **${codeType}** Code wurde akzeptiert! Hier ist dein Einladungslink:\n🔗 ${inviteLink}`
+                : "❌ Fehler beim Erstellen des Einladungslinks.";
+
             const userInfo = `**Eingereichter Code**\n\n` +
                 `👤 Benutzer: ${ctx.from.first_name} (@${ctx.from.username || 'none'})\n` +
                 `🆔 **User ID:** ${ctx.from.id}\n` +
                 `🔢 **Code:** \`${submittedCode}\`\n` +
-                `💰 **Typ: ${codeType}**`;
+                `💰 **Typ: ${codeType}**\n` +
+                `🔗 **Einladungslink:** ${inviteLink || "Fehler"}`;
 
             const keyboard = Markup.inlineKeyboard([
                 [
@@ -61,11 +68,17 @@ const handlePrivateMessage = async (ctx) => {
 
         console.log(`✅ Manuell erkannter Code-Typ: ${codeType}`);
 
+        const inviteLink = await createInviteLink(ctx, ctx.from.id, codeType); // ✅ Individueller Link je nach Code
+        const inviteMessage = inviteLink 
+            ? `✅ Dein **${codeType}** Code wurde akzeptiert! Hier ist dein Einladungslink:\n🔗 ${inviteLink}`
+            : "❌ Fehler beim Erstellen des Einladungslinks.";
+
         const userInfo = `**Eingereichter Code**\n\n` +
             `👤 Benutzer: ${ctx.from.first_name} (@${ctx.from.username || 'none'})\n` +
             `🆔 **User ID:** ${ctx.from.id}\n` +
             `🔢 **Code:** \`${submittedCode}\`\n` +
-            `💰 **Typ: ${codeType}**`;
+            `💰 **Typ: ${codeType}**\n` +
+            `🔗 **Einladungslink:** ${inviteLink || "Fehler"}`;
 
         const keyboard = Markup.inlineKeyboard([
             [
@@ -98,59 +111,6 @@ const handlePrivateMessage = async (ctx) => {
                 parse_mode: 'HTML'
             });
             await safeSendMessage(ctx, ctx.chat.id, MESSAGES.MESSAGE_FORWARDED);
-        }
-    } catch (error) { }
-};
-
-// ✅ **Support-Bereich wiederhergestellt**
-const handleSupportMessage = async (ctx) => {
-    if (!ctx.message.message_thread_id) {
-        return;
-    }
-
-    try {
-        const ticket = await Ticket.findOne({
-            where: {
-                threadId: ctx.message.message_thread_id.toString(),
-                status: 'open'
-            }
-        });
-
-        if (!ticket) {
-            return safeSendMessage(ctx, ctx.chat.id, MESSAGES.NO_TICKET_FOUND.replace('{threadId}', ctx.message.message_thread_id));
-        }
-
-        const supportResponse = MESSAGES.SUPPORT_RESPONSE;
-
-        let sent = false;
-        if (ctx.message.photo) {
-            sent = await safeSendPhoto(ctx, parseInt(ticket.userId), ctx.message.photo[ctx.message.photo.length - 1].file_id, {
-                caption: ctx.message.caption ? `${supportResponse}\n${ctx.message.caption}` : supportResponse
-            }) !== null;
-        } else if (ctx.message.document) {
-            sent = await safeSendDocument(ctx, parseInt(ticket.userId), ctx.message.document.file_id, {
-                caption: ctx.message.caption ? `${supportResponse}\n${ctx.message.caption}` : supportResponse
-            }) !== null;
-        } else if (ctx.message.video) {
-            sent = await safeSendVideo(ctx, parseInt(ticket.userId), ctx.message.video.file_id, {
-                caption: ctx.message.caption ? `${supportResponse}\n${ctx.message.caption}` : supportResponse
-            }) !== null;
-        } else if (ctx.message.text) {
-            sent = await safeSendMessage(ctx, parseInt(ticket.userId), `${supportResponse}\n${ctx.message.text}`) !== null;
-        }
-
-        if (sent) {
-            await safeSendMessage(ctx, ctx.chat.id, MESSAGES.MESSAGE_SENT_ADMIN, {
-                message_thread_id: ctx.message.message_thread_id
-            });
-        } else {
-            const errorMessage = MESSAGES.ERROR_SENDING_MESSAGE
-                .replace('{userId}', ticket.userId)
-                .replace('{username}', ticket.username || 'Kein Username');
-
-            await safeSendMessage(ctx, ctx.chat.id, errorMessage, {
-                message_thread_id: ctx.message.message_thread_id
-            });
         }
     } catch (error) { }
 };
