@@ -34,7 +34,12 @@ exports.MESSAGES = {
     ERROR_CREATING_TICKET: 'Es gab einen Fehler beim Erstellen deines Tickets. Bitte versuche es später erneut.',
     CODE_DENIED: 'Dein Code wurde leider abgelehnt. Bei Fragen kannst du gerne den Support kontaktieren.',
     MESSAGE_FORWARDED: 'Deine Nachricht wurde an den Support weitergeleitet.',
+
+    // ✅ 25€ & 100€ Code angepasst wie SEND_CODE
     SEND_CODE: 'Bitte sende mir deinen Code. Der Code muss in der Nachricht sein und darf kein Bild/Video sein.',
+    SEND_25_CODE: 'Bitte sende mir deinen Code. Der Code muss in der Nachricht sein und darf kein Bild/Video sein.',
+    SEND_100_CODE: 'Bitte sende mir deinen Code. Der Code muss in der Nachricht sein und darf kein Bild/Video sein.',
+
     INVALID_CODE_FORMAT: 'Ungültiges Code-Format. Bitte sende den gültigen 32-stelligen Code oder kontaktiere den Support.',
     CODE_ACCEPTED: 'Dein Code wurde akzeptiert! Hier ist dein Einladungslink:',
     CODE_ACCEPT_ADMIN: 'Code akzeptiert ✅',
