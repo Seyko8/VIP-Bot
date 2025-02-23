@@ -72,7 +72,7 @@ const handlePrivateMessage = async (ctx) => {
         return;
     }
 
-    // ✅ Wenn keine Antwort erkannt wurde, dann wird es als Support behandelt
+    // ✅ Support-Nachrichten verarbeiten (unverändert)
     try {
         const threadId = await getOrCreateTopic(ctx, ctx.from.id);
         if (threadId) {
@@ -90,7 +90,61 @@ const handlePrivateMessage = async (ctx) => {
     } catch (error) { }
 };
 
+// ✅ **Support-Bereich wiederhergestellt**
+const handleSupportMessage = async (ctx) => {
+    if (!ctx.message.message_thread_id) {
+        return;
+    }
+
+    try {
+        const ticket = await Ticket.findOne({
+            where: {
+                threadId: ctx.message.message_thread_id.toString(),
+                status: 'open'
+            }
+        });
+
+        if (!ticket) {
+            return safeSendMessage(ctx, ctx.chat.id, MESSAGES.NO_TICKET_FOUND.replace('{threadId}', ctx.message.message_thread_id));
+        }
+
+        const supportResponse = MESSAGES.SUPPORT_RESPONSE;
+
+        let sent = false;
+        if (ctx.message.photo) {
+            sent = await safeSendPhoto(ctx, parseInt(ticket.userId), ctx.message.photo[ctx.message.photo.length - 1].file_id, {
+                caption: ctx.message.caption ? `${supportResponse}\n${ctx.message.caption}` : supportResponse
+            }) !== null;
+        } else if (ctx.message.document) {
+            sent = await safeSendDocument(ctx, parseInt(ticket.userId), ctx.message.document.file_id, {
+                caption: ctx.message.caption ? `${supportResponse}\n${ctx.message.caption}` : supportResponse
+            }) !== null;
+        } else if (ctx.message.video) {
+            sent = await safeSendVideo(ctx, parseInt(ticket.userId), ctx.message.video.file_id, {
+                caption: ctx.message.caption ? `${supportResponse}\n${ctx.message.caption}` : supportResponse
+            }) !== null;
+        } else if (ctx.message.text) {
+            sent = await safeSendMessage(ctx, parseInt(ticket.userId), `${supportResponse}\n${ctx.message.text}`) !== null;
+        }
+
+        if (sent) {
+            await safeSendMessage(ctx, ctx.chat.id, MESSAGES.MESSAGE_SENT_ADMIN, {
+                message_thread_id: ctx.message.message_thread_id
+            });
+        } else {
+            const errorMessage = MESSAGES.ERROR_SENDING_MESSAGE
+                .replace('{userId}', ticket.userId)
+                .replace('{username}', ticket.username || 'Kein Username');
+
+            await safeSendMessage(ctx, ctx.chat.id, errorMessage, {
+                message_thread_id: ctx.message.message_thread_id
+            });
+        }
+    } catch (error) { }
+};
+
 // ✅ **Funktionen exportieren**
 module.exports = {
-    handlePrivateMessage
+    handlePrivateMessage,
+    handleSupportMessage
 };
