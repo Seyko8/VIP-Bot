@@ -10,7 +10,6 @@ services:
       - GROUP_ID_25=${GROUP_ID_25}  # ✅ Gruppen-ID für 25€ Nutzer
       - GROUP_ID_100=${GROUP_ID_100}  # ✅ Gruppen-ID für 100€ Nutzer
       - MONGODB_URI=${MONGODB_URI}
-      - INVITED_GROUP_ID=${INVITED_GROUP_ID}
       - ADMIN_USERNAME=${ADMIN_USERNAME}
       - DB_HOST=db
       - DB_NAME=${DB_NAME}
