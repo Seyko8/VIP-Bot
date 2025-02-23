@@ -1,31 +1,32 @@
-const { RATE_LIMIT } = require('../constants');
+const { RATE_LIMIT } = require('../constants'); // Stelle sicher, dass die Konstante geladen wird
 
 class RateLimiter {
     constructor(windowMs = RATE_LIMIT.WINDOW_MS, maxRequests = RATE_LIMIT.MAX_REQUESTS) {
         this.windowMs = windowMs;
         this.maxRequests = maxRequests;
-        this.requests = new Map();
+        this.users = new Map();
     }
 
     isRateLimited(userId) {
         const now = Date.now();
-        const userRequests = this.requests.get(userId) || [];
-        
-        // Entferne alte Anfragen
-        const validRequests = userRequests.filter(
-            timestamp => now - timestamp < this.windowMs
-        );
-        
-        if (validRequests.length >= this.maxRequests) {
+        if (!this.users.has(userId)) {
+            this.users.set(userId, { count: 1, startTime: now });
+            return false;
+        }
+
+        const userData = this.users.get(userId);
+        if (now - userData.startTime > this.windowMs) {
+            this.users.set(userId, { count: 1, startTime: now });
+            return false;
+        }
+
+        if (userData.count >= this.maxRequests) {
             return true;
         }
-        
-        validRequests.push(now);
-        this.requests.set(userId, validRequests);
+
+        userData.count++;
         return false;
     }
 }
 
-const globalRateLimiter = new RateLimiter();
-
-module.exports = globalRateLimiter; 
+module.exports = new RateLimiter();
