@@ -1,4 +1,4 @@
- const { Markup } = require('telegraf');
+const { Markup } = require('telegraf');
 const { MESSAGES } = require('../constants');
 const Ticket = require('../models/ticket');
 const rateLimiter = require('../utils/rateLimiter');
@@ -11,8 +11,11 @@ const handleStart = (ctx) => {
         return safeSendMessage(ctx, ctx.chat.id, MESSAGES.RATE_LIMIT_EXCEEDED);
     }
 
+    // ✅ Neue Buttons für 25€ und 100€ hinzugefügt (Rest bleibt gleich)
     const keyboard = Markup.inlineKeyboard([
         [Markup.button.callback('🎫 50€ Paket', 'redeem')],
+        [Markup.button.callback('💰 25€ Paket', 'redeem_25')],
+        [Markup.button.callback('💎 100€ Paket', 'redeem_100')],
         [Markup.button.callback('✉️ Support kontaktieren', 'ticket')]
     ]);
 
@@ -41,4 +44,4 @@ const handleClose = async (ctx) => {
 module.exports = {
     handleStart,
     handleClose
-}; 
+};
