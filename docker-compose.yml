@@ -3,11 +3,11 @@ version: '3.8'
 services:
   bot:
     build: .
-    environment:
-          environment:
+      environment:
       - BOT_TOKEN=${BOT_TOKEN}
       - ADMIN_GROUP_ID=${ADMIN_GROUP_ID}
       - MONGODB_URI=${MONGODB_URI}
+      - INVITED_GROUP_ID=${INVITED_GROUP_ID}
       - ADMIN_USERNAME=${ADMIN_USERNAME}
       - DB_HOST=db
       - DB_NAME=${DB_NAME}
