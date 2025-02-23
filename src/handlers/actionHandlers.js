@@ -44,15 +44,30 @@ const actionHandlers = {
             return safeSendMessage(ctx, ctx.chat.id, MESSAGES.GENERAL_ERROR);
         }
 
-        const inviteLink = await createInviteLink(ctx, userId);
-        
+        // ✅ Abrufen, welchen Code-Typ der User eingelöst hat
+        const storedUserId = userId.toString();
+        const codeType = userLastCodeType.get(storedUserId) || "50€"; // Falls kein Typ gespeichert ist, Standard = 50€
+
+        console.log(`🔍 Erstelle Invite-Link für User: ${userId} mit Code-Typ: ${codeType}`);
+        const inviteLink = await createInviteLink(ctx, userId, codeType);
+
         if (!inviteLink) {
             console.error("❌ Fehler beim Erstellen des Invite-Links!");
             return safeSendMessage(ctx, ctx.chat.id, MESSAGES.ERROR_INVITE_LINK);
         }
 
+        // ✅ Unterschiedliche Bestätigungsmeldungen je nach Code-Typ
+        let message;
+        if (codeType === "100€") {
+            message = MESSAGES.CODE_100_ACCEPTED;
+        } else if (codeType === "25€") {
+            message = MESSAGES.CODE_25_ACCEPTED;
+        } else {
+            message = MESSAGES.CODE_ACCEPTED;
+        }
+
         console.log(`✅ Invite-Link erfolgreich erstellt: ${inviteLink}`);
-        await safeSendMessage(ctx, userId, `${MESSAGES.CODE_ACCEPTED}\n🔗 **Dein Invite-Link:**\n${inviteLink}`);
+        await safeSendMessage(ctx, userId, `${message}\n🔗 **Dein Invite-Link:**\n${inviteLink}`);
 
         const updatedMessage = `${ctx.callbackQuery.message.text}\n\nStatus: ✅ Akzeptiert`;
         return safeEditMessageText(ctx, updatedMessage);
