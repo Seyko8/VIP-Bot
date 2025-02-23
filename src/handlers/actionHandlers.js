@@ -33,11 +33,14 @@ const actionHandlers = {
         const callbackData = ctx.callbackQuery.data;
         console.log(`✅ Accept gedrückt: ${callbackData}`);
 
+        // 🔍 Debug: Original Callback-Daten ausgeben
+        console.log(`📌 DEBUG: Callback-Daten = ${JSON.stringify(ctx.callbackQuery)}`);
+
         // 🔍 User-ID & Gruppen-ID korrekt auslesen
         const match = callbackData.match(/^accept_(\d+)_(\d+)$/);
         if (!match) {
             console.error("❌ Fehler: Ungültige Callback-Daten erhalten!", callbackData);
-            return;
+            return safeSendMessage(ctx, ctx.chat.id, "❌ Fehler: Ungültige Callback-Daten!");
         }
 
         const userId = match[1];
@@ -46,7 +49,9 @@ const actionHandlers = {
         console.log(`✅ Code akzeptiert für User: ${userId}, Gruppe: ${groupId}`);
 
         // ✅ Invite-Link erstellen
+        console.log(`🔍 Erstelle Invite-Link für User: ${userId} in Gruppe: ${groupId}`);
         const inviteLink = await createInviteLink(ctx, userId, groupId);
+
         if (!inviteLink) {
             console.error("❌ Fehler beim Erstellen des Invite-Links!");
             return safeSendMessage(ctx, ctx.chat.id, MESSAGES.ERROR_INVITE_LINK);
@@ -56,6 +61,7 @@ const actionHandlers = {
         await safeSendMessage(ctx, userId, `${MESSAGES.CODE_ACCEPTED}\n🔗 **Dein Invite-Link:**\n${inviteLink}`);
 
         // ✅ Nachricht in der Admin-Gruppe aktualisieren
+        console.log(`📌 DEBUG: Update Admin-Gruppe Nachricht`);
         const updatedMessage = `${ctx.callbackQuery.message.text}\n\nStatus: ✅ Akzeptiert`;
         return safeEditMessageText(ctx, updatedMessage);
     },
@@ -63,6 +69,9 @@ const actionHandlers = {
     deny: async (ctx) => {
         const callbackData = ctx.callbackQuery.data;
         console.log(`❌ Deny gedrückt: ${callbackData}`);
+
+        // 🔍 Debug: Original Callback-Daten ausgeben
+        console.log(`📌 DEBUG: Callback-Daten = ${JSON.stringify(ctx.callbackQuery)}`);
 
         const match = callbackData.match(/^deny_(\d+)$/);
         if (!match) {
@@ -86,6 +95,9 @@ const actionHandlers = {
 const handleAction = async (ctx) => {
     const callbackData = ctx.callbackQuery.data;
     console.log("🔍 Empfangene Callback-Daten:", callbackData);
+
+    // 🔍 Debug: Callback-Daten genauer ansehen
+    console.log(`📌 DEBUG: Komplette Callback-Daten = ${JSON.stringify(ctx.callbackQuery)}`);
 
     const actionType = callbackData.split('_')[0]; // `accept` oder `deny`
     const handler = actionHandlers[actionType];
