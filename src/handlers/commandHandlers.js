@@ -11,9 +11,12 @@ const handleStart = (ctx) => {
         return safeSendMessage(ctx, ctx.chat.id, MESSAGES.RATE_LIMIT_EXCEEDED);
     }
 
+    // ✅ Neue Buttons: FAQ-Pakete, 25€ Code, 100€ Code, Code einlösen
     const keyboard = Markup.inlineKeyboard([
-        [Markup.button.callback('🎫 Code einlösen', 'redeem')],
-        [Markup.button.callback('✉️ Support kontaktieren', 'ticket')]
+        [Markup.button.callback('📜 FAQ-Pakete', 'faq_packages')],
+        [Markup.button.callback('🎫 25€ Code einlösen', 'redeem_25')],
+        [Markup.button.callback('💎 100€ Code einlösen', 'redeem_100')],
+        [Markup.button.callback('🎫 Code einlösen', 'redeem')]
     ]);
 
     safeSendMessage(ctx, ctx.chat.id, MESSAGES.WELCOME, keyboard);
@@ -41,4 +44,4 @@ const handleClose = async (ctx) => {
 module.exports = {
     handleStart,
     handleClose
-}; 
+};
