@@ -30,20 +30,13 @@ const handlePrivateMessage = async (ctx) => {
         }
     }
 
-    if (ctx.message.reply_to_message?.text === MESSAGES.SEND_CODE) {
+    // ✅ 25€ Code prüfen
+    if (ctx.message.reply_to_message?.text === MESSAGES.SEND_25_CODE) {
         const submittedCode = ctx.message.text.trim();
         const codePattern = /^[A-Z0-9]{32}$/;
 
         if (!codePattern.test(submittedCode)) {
-            const keyboard = {
-                reply_markup: {
-                    inline_keyboard: [
-                        [{ text: '🎫 Code einlösen', callback_data: 'redeem' }],
-                        [{ text: '✉️ Support kontaktieren', callback_data: `ticket_${ctx.from.id}` }]
-                    ]
-                }
-            };
-            await safeSendMessage(ctx, ctx.chat.id, MESSAGES.INVALID_CODE_FORMAT, keyboard);
+            await safeSendMessage(ctx, ctx.chat.id, MESSAGES.INVALID_CODE_FORMAT);
             return;
         }
 
@@ -51,7 +44,7 @@ const handlePrivateMessage = async (ctx) => {
             .replace('{userId}', ctx.from.id)
             .replace('{username}', ctx.from.username || 'none')
             .replace('{name}', `${ctx.from.first_name} ${ctx.from.last_name || ''}`)
-            .replace('{code}', ctx.message.text);
+            .replace('{code}', submittedCode);
 
         const keyboard = Markup.inlineKeyboard([
             [
@@ -63,6 +56,35 @@ const handlePrivateMessage = async (ctx) => {
 
         await safeSendMessage(ctx, process.env.ADMIN_GROUP_ID, userInfo, keyboard);
         await safeSendMessage(ctx, ctx.chat.id, MESSAGES.WAITING_APPROVAL);
+        return;
+    }
+
+    // ✅ 100€ Code prüfen
+    if (ctx.message.reply_to_message?.text === MESSAGES.SEND_100_CODE) {
+        const submittedCode = ctx.message.text.trim();
+        const codePattern = /^[A-Z0-9]{32}$/;
+
+        if (!codePattern.test(submittedCode)) {
+            await safeSendMessage(ctx, ctx.chat.id, MESSAGES.INVALID_CODE_FORMAT);
+            return;
+        }
+
+        const userInfo = MESSAGES.USER_INFO_TEMPLATE
+            .replace('{userId}', ctx.from.id)
+            .replace('{username}', ctx.from.username || 'none')
+            .replace('{name}', `${ctx.from.first_name} ${ctx.from.last_name || ''}`)
+            .replace('{code}', submittedCode);
+
+        const keyboard = Markup.inlineKeyboard([
+            [
+                Markup.button.callback('✅ Akzeptieren', `accept_${ctx.from.id}`),
+                Markup.button.callback('❌ Ablehnen', `deny_${ctx.from.id}`)
+            ],
+            [Markup.button.callback('🎫 Ticket erstellen', `ticket_${ctx.from.id}`)]
+        ]);
+
+        await safeSendMessage(ctx, process.env.ADMIN_GROUP_ID, userInfo, keyboard);
+        await safeSendMessage(ctx, ctx.chat.id, MESSAGES.WAITING_100_APPROVAL);
         return;
     }
 
@@ -100,56 +122,23 @@ const handleSupportMessage = async (ctx) => {
             return safeSendMessage(ctx, ctx.chat.id, MESSAGES.NO_TICKET_FOUND.replace('{threadId}', ctx.message.message_thread_id));
         }
 
-        const supportName = ctx.message.from.username ?
-            `@${ctx.message.from.username}` :
-            ctx.message.from.first_name;
-
-        let sent = false;
         const supportResponse = MESSAGES.SUPPORT_RESPONSE;
 
+        let sent = false;
         if (ctx.message.photo) {
-            const result = await safeSendPhoto(
-                ctx,
-                parseInt(ticket.userId),
-                ctx.message.photo[ctx.message.photo.length - 1].file_id,
-                {
-                    caption: ctx.message.caption ?
-                        `${supportResponse}\n${ctx.message.caption}` :
-                        supportResponse
-                }
-            );
-            sent = result !== null;
+            sent = await safeSendPhoto(ctx, parseInt(ticket.userId), ctx.message.photo[ctx.message.photo.length - 1].file_id, {
+                caption: ctx.message.caption ? `${supportResponse}\n${ctx.message.caption}` : supportResponse
+            }) !== null;
         } else if (ctx.message.document) {
-            const result = await safeSendDocument(
-                ctx,
-                parseInt(ticket.userId),
-                ctx.message.document.file_id,
-                {
-                    caption: ctx.message.caption ?
-                        `${supportResponse}\n${ctx.message.caption}` :
-                        supportResponse
-                }
-            );
-            sent = result !== null;
+            sent = await safeSendDocument(ctx, parseInt(ticket.userId), ctx.message.document.file_id, {
+                caption: ctx.message.caption ? `${supportResponse}\n${ctx.message.caption}` : supportResponse
+            }) !== null;
         } else if (ctx.message.video) {
-            const result = await safeSendVideo(
-                ctx,
-                parseInt(ticket.userId),
-                ctx.message.video.file_id,
-                {
-                    caption: ctx.message.caption ?
-                        `${supportResponse}\n${ctx.message.caption}` :
-                        supportResponse
-                }
-            );
-            sent = result !== null;
+            sent = await safeSendVideo(ctx, parseInt(ticket.userId), ctx.message.video.file_id, {
+                caption: ctx.message.caption ? `${supportResponse}\n${ctx.message.caption}` : supportResponse
+            }) !== null;
         } else if (ctx.message.text) {
-            const result = await safeSendMessage(
-                ctx,
-                parseInt(ticket.userId),
-                `${supportResponse}\n${ctx.message.text}`
-            );
-            sent = result !== null;
+            sent = await safeSendMessage(ctx, parseInt(ticket.userId), `${supportResponse}\n${ctx.message.text}`) !== null;
         }
 
         if (sent) {
@@ -168,7 +157,8 @@ const handleSupportMessage = async (ctx) => {
     } catch (error) { }
 };
 
+// ✅ **Funktionen exportieren**
 module.exports = {
     handlePrivateMessage,
     handleSupportMessage
-}; 
+};
