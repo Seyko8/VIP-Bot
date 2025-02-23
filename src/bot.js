@@ -19,19 +19,19 @@ bot.action(/^(accept|deny|ticket)_\d+$/, handleAction);
 // ✅ **KORRIGIERT: Code-Typ speichern für 25€, 50€, 100€**
 bot.action('redeem_25', async (ctx) => {
     console.log(`🔍 25€ Code angefordert von User: ${ctx.from.id}`);
-    userLastCodeType.set(ctx.from.id, "25€"); // ✅ Code-Typ speichern
+    userLastCodeType.set(ctx.from.id.toString(), "25€"); // ✅ Code-Typ speichern
     await ctx.reply(MESSAGES.SEND_25_CODE);
 });
 
 bot.action('redeem_100', async (ctx) => {
     console.log(`🔍 100€ Code angefordert von User: ${ctx.from.id}`);
-    userLastCodeType.set(ctx.from.id, "100€"); // ✅ Code-Typ speichern
+    userLastCodeType.set(ctx.from.id.toString(), "100€"); // ✅ Code-Typ speichern
     await ctx.reply(MESSAGES.SEND_100_CODE);
 });
 
 bot.action('redeem', async (ctx) => {
     console.log(`🔍 50€ Code angefordert von User: ${ctx.from.id}`);
-    userLastCodeType.set(ctx.from.id, "50€"); // ✅ Code-Typ speichern
+    userLastCodeType.set(ctx.from.id.toString(), "50€"); // ✅ Code-Typ speichern
     await ctx.reply(MESSAGES.SEND_CODE);
 });
 
