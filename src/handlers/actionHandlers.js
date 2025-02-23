@@ -1,10 +1,8 @@
 const { Markup } = require('telegraf');
 const { MESSAGES } = require('../constants');
-const { getOrCreateTopic } = require('../utils/topic');
 const { createInviteLink } = require('../utils/inviteLink');
 const { safeSendMessage, safeEditMessageText } = require('../utils/messageHandler');
 
-// Speichert den letzten ausgewählten Code-Typ des Users
 const userLastCodeType = new Map();
 
 const actionHandlers = {
@@ -28,38 +26,23 @@ const actionHandlers = {
     
     ticket: async (ctx) => {
         console.log(`📩 Support-Ticket wird für User: ${ctx.from.id} erstellt.`);
-        const threadId = await getOrCreateTopic(ctx, ctx.from.id);
-        if (!threadId) {
-            console.error("❌ Fehler beim Erstellen des Support-Tickets!");
-            return safeSendMessage(ctx, ctx.chat.id, MESSAGES.ERROR_CREATING_TICKET);
-        }
-        return safeSendMessage(ctx, ctx.chat.id, MESSAGES.TICKET_CREATED);
+        await safeSendMessage(ctx, ctx.chat.id, MESSAGES.TICKET_CREATED);
     },
 
     accept: async (ctx) => {
         const callbackData = ctx.callbackQuery.data;
         console.log(`✅ Accept gedrückt: ${callbackData}`);
 
-        // 🔍 User-ID aus den Callback-Daten extrahieren
         const match = callbackData.match(/^accept_(\d+)_(\d+)$/);
         if (!match) {
-            console.error("❌ Fehler: Konnte User-ID nicht aus Callback-Daten extrahieren!");
+            console.error("❌ Fehler: Ungültige Callback-Daten erhalten!", callbackData);
             return;
         }
 
-        const userId = match[1];
-        const groupId = match[2];
-
+        const [_, userId, groupId] = match;
         console.log(`✅ Code akzeptiert für User: ${userId}, Gruppe: ${groupId}`);
 
-        if (!userId || isNaN(userId)) {
-            console.error("❌ Ungültige userId erhalten!");
-            return safeSendMessage(ctx, ctx.chat.id, MESSAGES.GENERAL_ERROR);
-        }
-
-        // ✅ Die richtige Gruppen-ID setzen
         const inviteLink = await createInviteLink(ctx, userId, groupId);
-
         if (!inviteLink) {
             console.error("❌ Fehler beim Erstellen des Invite-Links!");
             return safeSendMessage(ctx, ctx.chat.id, MESSAGES.ERROR_INVITE_LINK);
@@ -76,10 +59,9 @@ const actionHandlers = {
         const callbackData = ctx.callbackQuery.data;
         console.log(`❌ Deny gedrückt: ${callbackData}`);
 
-        // 🔍 User-ID aus den Callback-Daten extrahieren
         const match = callbackData.match(/^deny_(\d+)$/);
         if (!match) {
-            console.error("❌ Fehler: Konnte User-ID nicht aus Callback-Daten extrahieren!");
+            console.error("❌ Fehler: Konnte User-ID nicht aus Callback-Daten extrahieren!", callbackData);
             return;
         }
 
