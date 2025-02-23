@@ -16,8 +16,13 @@ bot.command('close', handleClose);
 bot.action(/^redeem$/, handleAction);
 
 // ✅ **Fix: Akzeptieren & Ablehnen für 25€, 50€, 100€ funktioniert wieder**
-bot.action(/^(accept|deny|ticket)_(25|50|100)_\d+$/, async (ctx) => {
-    console.log("🟢 Accept/Deny Button wurde gedrückt! Callback-Daten:", ctx.callbackQuery.data);
+bot.action(/^accept_(25|50|100)_\d+$/, async (ctx) => {
+    console.log("🟢 Accept-Button wurde gedrückt! Callback-Daten:", ctx.callbackQuery.data);
+    await handleAction(ctx);
+});
+
+bot.action(/^deny_(25|50|100)_\d+$/, async (ctx) => {
+    console.log("❌ Deny-Button wurde gedrückt! Callback-Daten:", ctx.callbackQuery.data);
     await handleAction(ctx);
 });
 
@@ -64,7 +69,12 @@ bot.on('message', async (ctx) => {
 
 // ✅ **Fehlerbehandlung**
 bot.catch((err, ctx) => {
-    ctx.reply(MESSAGES.GENERAL_ERROR);
+    console.error("❌ Fehler im Bot:", err);
+    try {
+        ctx.reply(MESSAGES.GENERAL_ERROR);
+    } catch (e) {
+        console.error("⚠️ Fehler beim Senden der Fehlernachricht:", e);
+    }
 });
 
 bot.launch().then(() => {
