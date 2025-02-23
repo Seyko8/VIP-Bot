@@ -58,3 +58,9 @@ exports.MESSAGES = {
     
     RATE_LIMIT_EXCEEDED: 'Du hast zu viele Anfragen gesendet. Bitte warte einen Moment, bevor du es erneut versuchst.'
 };
+
+// ✅ Fehlende Rate Limit Konfiguration wieder eingefügt!
+exports.RATE_LIMIT = {
+    WINDOW_MS: 60000,  // 1 Minute
+    MAX_REQUESTS: 10   // Maximal 10 Anfragen pro Minute
+};
