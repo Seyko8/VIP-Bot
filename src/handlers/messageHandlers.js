@@ -12,7 +12,7 @@ const handlePrivateMessage = async (ctx) => {
 
         // ✅ Prüfen, ob es ein gültiger Code ist
         if (codePattern.test(submittedCode)) {
-            const codeType = userLastCodeType.get(ctx.from.id) || "❓ Unbekannt (manuell prüfen)"; // ✅ Code-Typ abrufen
+            let codeType = userLastCodeType.get(ctx.from.id) || "❓ Unbekannt (manuell prüfen)"; // ✅ Code-Typ abrufen
 
             console.log(`📨 Code empfangen von User ${ctx.from.id}: ${submittedCode} (Typ: ${codeType})`);
 
@@ -36,12 +36,16 @@ const handlePrivateMessage = async (ctx) => {
         }
     }
 
-    // ✅ Prüfen, ob der User einen **25€ oder 100€ Code** per Reply auf eine Bot-Nachricht sendet
+    // ✅ Prüfen, ob der User einen **25€, 50€, oder 100€ Code** per Reply auf eine Bot-Nachricht sendet
     const lastMessage = ctx.message.reply_to_message?.text;
     if (lastMessage) {
-        let codeType = "❓ Unbekannt (manuell prüfen)"; // Default
+        let codeType = "❓ Unbekannt (manuell prüfen)"; // Standard
         if (lastMessage.includes(MESSAGES.SEND_25_CODE)) codeType = "25€";
+        if (lastMessage.includes(MESSAGES.SEND_CODE)) codeType = "50€";
         if (lastMessage.includes(MESSAGES.SEND_100_CODE)) codeType = "100€";
+
+        // ✅ Code speichern für die spätere Verwendung
+        userLastCodeType.set(ctx.from.id, codeType);
 
         const submittedCode = ctx.message.text.trim();
         const codePattern = /^[A-Z0-9]{32}$/;
