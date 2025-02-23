@@ -1,4 +1,4 @@
-const { Telegraf } = require('telegraf');
+const { Telegraf, Markup } = require('telegraf');
 const { MESSAGES } = require('./constants');
 const { handleStart, handleClose } = require('./handlers/commandHandlers');
 const { handleAction } = require('./handlers/actionHandlers');
@@ -15,6 +15,23 @@ bot.command('close', handleClose);
 
 bot.action(/^redeem$/, handleAction);
 bot.action(/^(accept|deny|ticket)_\d+$/, handleAction);
+
+// ✅ Neue Buttons: FAQ-Pakete, 25€ Code, 100€ Code, Code einlösen, Support
+bot.action('faq_packages', async (ctx) => {
+    await ctx.reply(MESSAGES.FAQ_TEXT);
+});
+
+bot.action('redeem_25', async (ctx) => {
+    await ctx.reply(MESSAGES.SEND_25_CODE);
+});
+
+bot.action('redeem_100', async (ctx) => {
+    await ctx.reply(MESSAGES.SEND_100_CODE);
+});
+
+bot.action('ticket', async (ctx) => {
+    await ctx.reply(MESSAGES.TICKET_CREATED);
+});
 
 bot.on('message', async (ctx) => {
     if (ctx.message.from.id === ctx.botInfo.id) {
