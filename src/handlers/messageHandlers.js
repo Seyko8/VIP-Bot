@@ -14,7 +14,7 @@ const handlePrivateMessage = async (ctx) => {
                 + `👤 Benutzer: ${ctx.from.first_name} (@${ctx.from.username || 'none'})\n`
                 + `🆔 **User ID:** ${ctx.from.id}\n`
                 + `🔢 **Code:** \`${submittedCode}\`\n`
-                + `💰 **Typ: Unbekannt (manuell prüfen)**`;
+                + `💰 **Typ: ❓ Unbekannt (manuell prüfen)**`;
 
             const keyboard = Markup.inlineKeyboard([
                 [
@@ -40,11 +40,11 @@ const handlePrivateMessage = async (ctx) => {
             return;
         }
 
-        const userInfo = `📌 **Eingereichter Code**\n\n`
+        const userInfo = `📌 **Eingereichter Code (25€)**\n\n`
             + `👤 Benutzer: ${ctx.from.first_name} (@${ctx.from.username || 'none'})\n`
             + `🆔 **User ID:** ${ctx.from.id}\n`
             + `🔢 **Code:** \`${submittedCode}\`\n`
-            + `💰 **Typ: 25€ Code** ✅`;
+            + `💰 **Typ: ✅ 25€ Code**`;
 
         const keyboard = Markup.inlineKeyboard([
             [
@@ -69,11 +69,11 @@ const handlePrivateMessage = async (ctx) => {
             return;
         }
 
-        const userInfo = `📌 **Eingereichter Code**\n\n`
+        const userInfo = `📌 **Eingereichter Code (100€)**\n\n`
             + `👤 Benutzer: ${ctx.from.first_name} (@${ctx.from.username || 'none'})\n`
             + `🆔 **User ID:** ${ctx.from.id}\n`
             + `🔢 **Code:** \`${submittedCode}\`\n`
-            + `💰 **Typ: 100€ Code** ✅`;
+            + `💰 **Typ: ✅ 100€ Code**`;
 
         const keyboard = Markup.inlineKeyboard([
             [
@@ -88,6 +88,7 @@ const handlePrivateMessage = async (ctx) => {
         return;
     }
 
+    // ✅ Support Nachricht weiterleiten (Fix für Support-System!)
     try {
         const threadId = await getOrCreateTopic(ctx, ctx.from.id);
         if (threadId) {
@@ -102,10 +103,68 @@ const handlePrivateMessage = async (ctx) => {
             });
             await safeSendMessage(ctx, ctx.chat.id, MESSAGES.MESSAGE_FORWARDED);
         }
-    } catch (error) { }
+    } catch (error) {
+        console.error("❌ Fehler beim Weiterleiten der Support-Nachricht:", error);
+    }
+};
+
+// ✅ **Support Antwort weiterleiten**
+const handleSupportMessage = async (ctx) => {
+    if (!ctx.message.message_thread_id) {
+        return;
+    }
+
+    try {
+        const ticket = await Ticket.findOne({
+            where: {
+                threadId: ctx.message.message_thread_id.toString(),
+                status: 'open'
+            }
+        });
+
+        if (!ticket) {
+            return safeSendMessage(ctx, ctx.chat.id, MESSAGES.NO_TICKET_FOUND.replace('{threadId}', ctx.message.message_thread_id));
+        }
+
+        const supportResponse = MESSAGES.SUPPORT_RESPONSE;
+        let sent = false;
+
+        if (ctx.message.photo) {
+            sent = await safeSendPhoto(ctx, parseInt(ticket.userId), ctx.message.photo[ctx.message.photo.length - 1].file_id, {
+                caption: ctx.message.caption ? `${supportResponse}\n${ctx.message.caption}` : supportResponse
+            }) !== null;
+        } else if (ctx.message.document) {
+            sent = await safeSendDocument(ctx, parseInt(ticket.userId), ctx.message.document.file_id, {
+                caption: ctx.message.caption ? `${supportResponse}\n${ctx.message.caption}` : supportResponse
+            }) !== null;
+        } else if (ctx.message.video) {
+            sent = await safeSendVideo(ctx, parseInt(ticket.userId), ctx.message.video.file_id, {
+                caption: ctx.message.caption ? `${supportResponse}\n${ctx.message.caption}` : supportResponse
+            }) !== null;
+        } else if (ctx.message.text) {
+            sent = await safeSendMessage(ctx, parseInt(ticket.userId), `${supportResponse}\n${ctx.message.text}`) !== null;
+        }
+
+        if (sent) {
+            await safeSendMessage(ctx, ctx.chat.id, MESSAGES.MESSAGE_SENT_ADMIN, {
+                message_thread_id: ctx.message.message_thread_id
+            });
+        } else {
+            const errorMessage = MESSAGES.ERROR_SENDING_MESSAGE
+                .replace('{userId}', ticket.userId)
+                .replace('{username}', ticket.username || 'Kein Username');
+
+            await safeSendMessage(ctx, ctx.chat.id, errorMessage, {
+                message_thread_id: ctx.message.message_thread_id
+            });
+        }
+    } catch (error) {
+        console.error("❌ Fehler beim Senden der Support-Antwort:", error);
+    }
 };
 
 // ✅ **Funktionen exportieren**
 module.exports = {
-    handlePrivateMessage
+    handlePrivateMessage,
+    handleSupportMessage
 };
