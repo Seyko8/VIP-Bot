@@ -4,7 +4,7 @@ const { getOrCreateTopic } = require('../utils/topic');
 const { createInviteLink } = require('../utils/inviteLink');
 const { safeSendMessage, safeEditMessageText } = require('../utils/messageHandler');
 
-// ✅ **Speichert den letzten Code-Typ des Users (25€, 50€, 100€)**
+// ✅ **Speichert den letzten Code-Typ (25€, 50€, 100€) pro User**
 const userLastCodeType = new Map();
 
 const actionHandlers = {
@@ -25,7 +25,7 @@ const actionHandlers = {
         userLastCodeType.set(ctx.from.id.toString(), "50€");
         await safeSendMessage(ctx, ctx.chat.id, MESSAGES.SEND_CODE);
     },
-    
+
     ticket: async (ctx) => {
         console.log(`📩 Support-Ticket wird für User: ${ctx.from.id} erstellt.`);
         const threadId = await getOrCreateTopic(ctx, ctx.from.id);
@@ -36,18 +36,15 @@ const actionHandlers = {
         return safeSendMessage(ctx, ctx.chat.id, MESSAGES.TICKET_CREATED);
     },
 
-    accept: async (ctx, userId) => {
-        console.log(`✅ Accept gedrückt für User: ${userId}`);
+    accept: async (ctx, userId, codeType) => {
+        console.log(`✅ Accept gedrückt für User: ${userId}, Code-Typ: ${codeType}`);
 
         if (!userId || isNaN(userId)) {
             console.error("❌ Fehler: Ungültige User-ID!");
             return safeSendMessage(ctx, ctx.chat.id, MESSAGES.GENERAL_ERROR);
         }
 
-        // ✅ **Gruppen-ID aus ENV abrufen & Code-Typ erkennen**
-        const storedUserId = userId.toString();
-        const codeType = userLastCodeType.get(storedUserId) || "50€"; // Falls kein Typ gespeichert ist, Standard = 50€
-
+        // ✅ **Gruppen-ID anhand des Code-Typs aus ENV**
         let groupId;
         if (codeType === "100€") {
             groupId = process.env.GROUP_ID_100;
@@ -72,7 +69,7 @@ const actionHandlers = {
             return safeSendMessage(ctx, ctx.chat.id, MESSAGES.ERROR_INVITE_LINK);
         }
 
-        // ✅ **Richtige Nachricht basierend auf dem Code-Typ senden**
+        // ✅ **Passende Nachricht basierend auf dem Code-Typ**
         let message;
         if (codeType === "100€") {
             message = MESSAGES.CODE_100_ACCEPTED;
@@ -105,7 +102,7 @@ const handleAction = async (ctx) => {
     const callbackData = ctx.callbackQuery.data;
     console.log("🔍 Empfangene Callback-Daten:", callbackData);
 
-    const [action, userId] = callbackData.split('_');
+    const [action, userId, codeType] = callbackData.split('_');
     const handler = actionHandlers[action];
 
     if (!handler) {
@@ -114,8 +111,8 @@ const handleAction = async (ctx) => {
     }
 
     try {
-        console.log(`🔍 Verarbeite Aktion: ${action} für User: ${userId}`);
-        return await handler(ctx, userId);
+        console.log(`🔍 Verarbeite Aktion: ${action} für User: ${userId} | Code-Typ: ${codeType}`);
+        return await handler(ctx, userId, codeType);
     } catch (error) {
         console.error(`❌ Fehler bei der Ausführung der Aktion ${action}:`, error);
     }
