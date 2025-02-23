@@ -23,7 +23,7 @@ const actionHandlers = {
         userLastCodeType.set(ctx.from.id.toString(), "50€");
         await safeSendMessage(ctx, ctx.chat.id, MESSAGES.SEND_CODE);
     },
-    
+
     ticket: async (ctx) => {
         console.log(`📩 Support-Ticket wird für User: ${ctx.from.id} erstellt.`);
         await safeSendMessage(ctx, ctx.chat.id, MESSAGES.TICKET_CREATED);
@@ -33,15 +33,19 @@ const actionHandlers = {
         const callbackData = ctx.callbackQuery.data;
         console.log(`✅ Accept gedrückt: ${callbackData}`);
 
+        // 🔍 User-ID & Gruppen-ID korrekt auslesen
         const match = callbackData.match(/^accept_(\d+)_(\d+)$/);
         if (!match) {
             console.error("❌ Fehler: Ungültige Callback-Daten erhalten!", callbackData);
             return;
         }
 
-        const [_, userId, groupId] = match;
+        const userId = match[1];
+        const groupId = match[2];
+
         console.log(`✅ Code akzeptiert für User: ${userId}, Gruppe: ${groupId}`);
 
+        // ✅ Invite-Link erstellen
         const inviteLink = await createInviteLink(ctx, userId, groupId);
         if (!inviteLink) {
             console.error("❌ Fehler beim Erstellen des Invite-Links!");
@@ -51,6 +55,7 @@ const actionHandlers = {
         console.log(`✅ Invite-Link erfolgreich erstellt: ${inviteLink}`);
         await safeSendMessage(ctx, userId, `${MESSAGES.CODE_ACCEPTED}\n🔗 **Dein Invite-Link:**\n${inviteLink}`);
 
+        // ✅ Nachricht in der Admin-Gruppe aktualisieren
         const updatedMessage = `${ctx.callbackQuery.message.text}\n\nStatus: ✅ Akzeptiert`;
         return safeEditMessageText(ctx, updatedMessage);
     },
@@ -82,8 +87,8 @@ const handleAction = async (ctx) => {
     const callbackData = ctx.callbackQuery.data;
     console.log("🔍 Empfangene Callback-Daten:", callbackData);
 
-    const [action] = callbackData.split('_');
-    const handler = actionHandlers[action];
+    const actionType = callbackData.split('_')[0]; // `accept` oder `deny`
+    const handler = actionHandlers[actionType];
 
     if (!handler) {
         console.error(`❌ Unbekannte Aktion: ${callbackData}`);
@@ -91,10 +96,10 @@ const handleAction = async (ctx) => {
     }
 
     try {
-        console.log(`🔍 Verarbeite Aktion: ${action}`);
+        console.log(`🔍 Verarbeite Aktion: ${actionType}`);
         return await handler(ctx);
     } catch (error) {
-        console.error(`❌ Fehler bei der Ausführung der Aktion ${action}:`, error);
+        console.error(`❌ Fehler bei der Ausführung der Aktion ${actionType}:`, error);
     }
 };
 
