@@ -36,13 +36,17 @@ const actionHandlers = {
         return safeSendMessage(ctx, ctx.chat.id, MESSAGES.TICKET_CREATED);
     },
 
-    accept: async (ctx, userId, codeType) => {
-        console.log(`✅ Accept gedrückt für User: ${userId}, Code-Typ: ${codeType}`);
+    accept: async (ctx, userId) => {
+        console.log(`✅ Accept gedrückt für User: ${userId}`);
 
         if (!userId || isNaN(userId)) {
             console.error("❌ Fehler: Ungültige User-ID!");
             return safeSendMessage(ctx, ctx.chat.id, MESSAGES.GENERAL_ERROR);
         }
+
+        // ✅ **Code-Typ aus der Map abrufen**
+        const storedUserId = userId.toString();
+        const codeType = userLastCodeType.get(storedUserId) || "50€"; // Falls kein Typ gespeichert ist, Standard = 50€
 
         // ✅ **Gruppen-ID anhand des Code-Typs aus ENV**
         let groupId;
@@ -102,7 +106,7 @@ const handleAction = async (ctx) => {
     const callbackData = ctx.callbackQuery.data;
     console.log("🔍 Empfangene Callback-Daten:", callbackData);
 
-    const [action, userId, codeType] = callbackData.split('_');
+    const [action, userId] = callbackData.split('_');
     const handler = actionHandlers[action];
 
     if (!handler) {
@@ -111,8 +115,8 @@ const handleAction = async (ctx) => {
     }
 
     try {
-        console.log(`🔍 Verarbeite Aktion: ${action} für User: ${userId} | Code-Typ: ${codeType}`);
-        return await handler(ctx, userId, codeType);
+        console.log(`🔍 Verarbeite Aktion: ${action} für User: ${userId} | Code-Typ: ${userLastCodeType.get(userId)}`);
+        return await handler(ctx, userId);
     } catch (error) {
         console.error(`❌ Fehler bei der Ausführung der Aktion ${action}:`, error);
     }
@@ -120,5 +124,5 @@ const handleAction = async (ctx) => {
 
 module.exports = {
     handleAction,
-    userLastCodeType
+    userLastCodeType // ✅ Exportiert, damit `messageHandlers.js` darauf zugreifen kann
 };
