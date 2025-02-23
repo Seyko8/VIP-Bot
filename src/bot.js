@@ -1,7 +1,7 @@
 const { Telegraf, Markup } = require('telegraf');
 const { MESSAGES } = require('./constants');
 const { handleStart, handleClose } = require('./handlers/commandHandlers');
-const { handleAction, userLastCodeType } = require('./handlers/actionHandlers'); // ✅ Code-Typ speichern
+const { handleAction, userLastCodeType } = require('./handlers/actionHandlers');
 const { handlePrivateMessage, handleSupportMessage } = require('./handlers/messageHandlers');
 const rateLimitMiddleware = require('./middleware/rateLimit');
 require('dotenv').config();
@@ -16,27 +16,32 @@ bot.command('close', handleClose);
 bot.action(/^redeem$/, handleAction);
 
 // ✅ **Fix: Akzeptieren & Ablehnen für 25€, 50€, 100€ funktioniert wieder**
-bot.action(/^(accept|deny|ticket)_(25|50|100)_\d+$/, async (ctx) => {
-    console.log("🟢 Accept/Deny Button wurde gedrückt! Callback-Daten:", ctx.callbackQuery.data);
+bot.action(/^accept_(\d+)_(\d+)$/, async (ctx) => {
+    console.log("🟢 Accept-Button wurde gedrückt! Callback-Daten:", ctx.callbackQuery.data);
+    await handleAction(ctx);
+});
+
+bot.action(/^deny_(\d+)$/, async (ctx) => {
+    console.log("❌ Deny-Button wurde gedrückt! Callback-Daten:", ctx.callbackQuery.data);
     await handleAction(ctx);
 });
 
 // ✅ **Fix: Code-Typ speichern für 25€, 50€, 100€**
 bot.action('redeem_25', async (ctx) => {
     console.log(`🔍 25€ Code angefordert von User: ${ctx.from.id}`);
-    userLastCodeType.set(ctx.from.id.toString(), "25€"); 
+    userLastCodeType.set(ctx.from.id.toString(), "25€");
     await ctx.reply(MESSAGES.SEND_25_CODE);
 });
 
 bot.action('redeem_100', async (ctx) => {
     console.log(`🔍 100€ Code angefordert von User: ${ctx.from.id}`);
-    userLastCodeType.set(ctx.from.id.toString(), "100€"); 
+    userLastCodeType.set(ctx.from.id.toString(), "100€");
     await ctx.reply(MESSAGES.SEND_100_CODE);
 });
 
 bot.action('redeem', async (ctx) => {
     console.log(`🔍 50€ Code angefordert von User: ${ctx.from.id}`);
-    userLastCodeType.set(ctx.from.id.toString(), "50€"); 
+    userLastCodeType.set(ctx.from.id.toString(), "50€");
     await ctx.reply(MESSAGES.SEND_CODE);
 });
 
@@ -64,7 +69,12 @@ bot.on('message', async (ctx) => {
 
 // ✅ **Fehlerbehandlung**
 bot.catch((err, ctx) => {
-    ctx.reply(MESSAGES.GENERAL_ERROR);
+    console.error("❌ Fehler im Bot:", err);
+    try {
+        ctx.reply(MESSAGES.GENERAL_ERROR);
+    } catch (e) {
+        console.error("⚠️ Fehler beim Senden der Fehlernachricht:", e);
+    }
 });
 
 bot.launch().then(() => {
