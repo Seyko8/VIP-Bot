@@ -25,38 +25,42 @@ exports.MESSAGES = {
     SEND_100_CODE: '💎 Bitte sende mir deinen **100€ Code**. Der Code muss in der Nachricht sein und darf kein Bild/Video sein.',
 
     INVALID_CODE_FORMAT: '❌ Ungültiges Code-Format. Bitte sende den gültigen 32-stelligen Code oder kontaktiere den Support.',
+    
+    // ✅ KORRIGIERT: 50€, 25€ & 100€ Codes haben eigene Messages
     CODE_ACCEPTED: '✅ Dein **50€ Code** wurde akzeptiert! Hier ist dein Einladungslink:',
+    CODE_25_ACCEPTED: '✅ Dein **25€ Code** wurde akzeptiert! Hier ist dein Einladungslink:',
     CODE_100_ACCEPTED: '✅ Dein **100€ Code** wurde akzeptiert! Hier ist dein Einladungslink:',
     
     WAITING_APPROVAL: '⏳ Dein **50€ Code** wurde eingereicht. Ein Admin wird ihn bald überprüfen.',
+    WAITING_25_APPROVAL: '⏳ Dein **25€ Code** wurde eingereicht. Ein Admin wird ihn bald überprüfen.', // ✅ HINZUGEFÜGT
     WAITING_100_APPROVAL: '⏳ Dein **100€ Code** wurde eingereicht. Ein Admin wird ihn bald überprüfen.',
 
-    CODE_DENIED: 'Dein Code wurde leider abgelehnt. Bei Fragen kannst du gerne den Support kontaktieren.',
-    MESSAGE_FORWARDED: 'Deine Nachricht wurde an den Support weitergeleitet.',
+    CODE_DENIED: '❌ Dein Code wurde leider abgelehnt. Bei Fragen kannst du gerne den Support kontaktieren.',
+    MESSAGE_FORWARDED: '📨 Deine Nachricht wurde an den Support weitergeleitet.',
     
-    CODE_ACCEPT_ADMIN: 'Code akzeptiert ✅',
-    CODE_DENY_ADMIN: 'Code abgelehnt ❌',
-    TICKET_CREATED_ADMIN: 'Ticket erstellt 🎫',
-    ERROR_INVITE_LINK: 'Fehler beim Erstellen des Einladungslinks.',
+    CODE_ACCEPT_ADMIN: '✅ Code akzeptiert',
+    CODE_DENY_ADMIN: '❌ Code abgelehnt',
+    TICKET_CREATED_ADMIN: '🎫 Ticket erstellt',
+    ERROR_INVITE_LINK: '⚠️ Fehler beim Erstellen des Einladungslinks.',
 
-    TICKET_CLOSED: 'Ticket wurde geschlossen.',
-    TICKET_CLOSED_USER: 'Dein Support-Ticket wurde geschlossen. Bei weiteren Fragen kannst du jederzeit ein neues Ticket öffnen.',
-    ERROR_CLOSING_TICKET: 'Fehler beim Schließen des Tickets.',
+    TICKET_CLOSED: '🚪 Ticket wurde geschlossen.',
+    TICKET_CLOSED_USER: '📩 Dein Support-Ticket wurde geschlossen. Bei weiteren Fragen kannst du jederzeit ein neues Ticket öffnen.',
+    ERROR_CLOSING_TICKET: '⚠️ Fehler beim Schließen des Tickets.',
     
-    NO_TICKET_FOUND: 'Kein aktives Ticket gefunden.\n\nThread ID: {threadId}\nBitte prüfe die Datenbank oder erstelle ein neues Ticket.',
+    NO_TICKET_FOUND: '🚫 Kein aktives Ticket gefunden.\n\nThread ID: {threadId}\nBitte prüfe die Datenbank oder erstelle ein neues Ticket.',
     
     MESSAGE_SENT_ADMIN: '✅ Nachricht wurde an den User weitergeleitet.',
-    ERROR_SENDING_MESSAGE: '❌ Fehler beim Senden der Nachricht an den User.',
+    ERROR_SENDING_MESSAGE: '⚠️ Fehler beim Senden der Nachricht an den User.',
     
-    SUPPORT_RESPONSE: 'Support Antwort:',
+    SUPPORT_RESPONSE: '💬 Support Antwort:',
     
-    USER_MESSAGE: 'Von User {userId}{username}:\n{text}',
-    CHECK_TOPIC_ACCESS: 'Prüfe Topic-Zugriff...',
+    USER_MESSAGE: '📩 Von User {userId}{username}:\n{text}',
+    CHECK_TOPIC_ACCESS: '🔍 Prüfe Topic-Zugriff...',
     NEW_SUPPORT_TICKET: '🆕 Neues Support-Ticket\n\nUser ID: {userId}\nUsername: {username}\nName: {name}\nSprache: {language}',
     
-    GENERAL_ERROR: 'Es ist ein Fehler aufgetreten. Bitte versuche es später erneut.',
+    GENERAL_ERROR: '⚠️ Es ist ein Fehler aufgetreten. Bitte versuche es später erneut.',
     
-    RATE_LIMIT_EXCEEDED: 'Du hast zu viele Anfragen gesendet. Bitte warte einen Moment, bevor du es erneut versuchst.'
+    RATE_LIMIT_EXCEEDED: '⚠️ Du hast zu viele Anfragen gesendet. Bitte warte einen Moment, bevor du es erneut versuchst.'
 };
 
 // ✅ Fehlende Rate Limit Konfiguration wieder eingefügt!
