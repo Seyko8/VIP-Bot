@@ -14,24 +14,29 @@ bot.command('start', handleStart);
 bot.command('close', handleClose);
 
 bot.action(/^redeem$/, handleAction);
-bot.action(/^(accept|deny|ticket)_\d+$/, handleAction);
 
-// ✅ **KORRIGIERT: Code-Typ speichern für 25€, 50€, 100€**
+// ✅ **Fix: Akzeptieren & Ablehnen für 25€, 50€, 100€ funktioniert wieder**
+bot.action(/^(accept|deny|ticket)_(25|50|100)_\d+$/, async (ctx) => {
+    console.log("🟢 Accept/Deny Button wurde gedrückt! Callback-Daten:", ctx.callbackQuery.data);
+    await handleAction(ctx);
+});
+
+// ✅ **Fix: Code-Typ speichern für 25€, 50€, 100€**
 bot.action('redeem_25', async (ctx) => {
     console.log(`🔍 25€ Code angefordert von User: ${ctx.from.id}`);
-    userLastCodeType.set(ctx.from.id.toString(), "25€"); // ✅ Code-Typ speichern
+    userLastCodeType.set(ctx.from.id.toString(), "25€"); 
     await ctx.reply(MESSAGES.SEND_25_CODE);
 });
 
 bot.action('redeem_100', async (ctx) => {
     console.log(`🔍 100€ Code angefordert von User: ${ctx.from.id}`);
-    userLastCodeType.set(ctx.from.id.toString(), "100€"); // ✅ Code-Typ speichern
+    userLastCodeType.set(ctx.from.id.toString(), "100€"); 
     await ctx.reply(MESSAGES.SEND_100_CODE);
 });
 
 bot.action('redeem', async (ctx) => {
     console.log(`🔍 50€ Code angefordert von User: ${ctx.from.id}`);
-    userLastCodeType.set(ctx.from.id.toString(), "50€"); // ✅ Code-Typ speichern
+    userLastCodeType.set(ctx.from.id.toString(), "50€"); 
     await ctx.reply(MESSAGES.SEND_CODE);
 });
 
@@ -44,6 +49,7 @@ bot.action('ticket', async (ctx) => {
     await ctx.reply(MESSAGES.TICKET_CREATED);
 });
 
+// ✅ **Nachrichten-Handler**
 bot.on('message', async (ctx) => {
     if (ctx.message.from.id === ctx.botInfo.id) {
         return;
@@ -56,6 +62,7 @@ bot.on('message', async (ctx) => {
     }
 });
 
+// ✅ **Fehlerbehandlung**
 bot.catch((err, ctx) => {
     ctx.reply(MESSAGES.GENERAL_ERROR);
 });
