@@ -3,18 +3,24 @@ const { MESSAGES } = require('../constants');
 const { getOrCreateTopic } = require('../utils/topic');
 const Ticket = require('../models/ticket');
 const { safeSendMessage, safeSendPhoto, safeSendDocument, safeSendVideo } = require('../utils/messageHandler');
+const { userLastCodeType } = require('./actionHandlers'); // ✅ Code-Typ Speicher importieren
 
 const handlePrivateMessage = async (ctx) => {
     if (ctx.message.text) {
         const submittedCode = ctx.message.text.trim();
         const codePattern = /^[A-Z0-9]{32}$/;
 
+        // ✅ Prüfen, ob es ein gültiger Code ist
         if (codePattern.test(submittedCode)) {
-            const userInfo = `📌 **Eingereichter Code**\n\n`
-                + `👤 Benutzer: ${ctx.from.first_name} (@${ctx.from.username || 'none'})\n`
-                + `🆔 **User ID:** ${ctx.from.id}\n`
-                + `🔢 **Code:** \`${submittedCode}\`\n`
-                + `💰 **Typ: ❓ Unbekannt (manuell prüfen)**`;
+            const codeType = userLastCodeType.get(ctx.from.id) || "❓ Unbekannt (manuell prüfen)"; // ✅ Code-Typ abrufen
+
+            console.log(`📨 Code empfangen von User ${ctx.from.id}: ${submittedCode} (Typ: ${codeType})`);
+
+            const userInfo = `**Eingereichter Code**\n\n` +
+                `👤 Benutzer: ${ctx.from.first_name} (@${ctx.from.username || 'none'})\n` +
+                `🆔 **User ID:** ${ctx.from.id}\n` +
+                `🔢 **Code:** \`${submittedCode}\`\n` +
+                `💰 **Typ: ${codeType}**`;
 
             const keyboard = Markup.inlineKeyboard([
                 [
@@ -25,13 +31,18 @@ const handlePrivateMessage = async (ctx) => {
             ]);
 
             await safeSendMessage(ctx, process.env.ADMIN_GROUP_ID, userInfo, keyboard);
-            await safeSendMessage(ctx, ctx.chat.id, MESSAGES.WAITING_APPROVAL);
+            await safeSendMessage(ctx, ctx.chat.id, codeType === "100€" ? MESSAGES.WAITING_100_APPROVAL : MESSAGES.WAITING_APPROVAL);
             return;
         }
     }
 
-    // ✅ 25€ Code prüfen
-    if (ctx.message.reply_to_message?.text === MESSAGES.SEND_25_CODE) {
+    // ✅ Prüfen, ob der User einen **25€ oder 100€ Code** per Reply auf eine Bot-Nachricht sendet
+    const lastMessage = ctx.message.reply_to_message?.text;
+    if (lastMessage) {
+        let codeType = "❓ Unbekannt (manuell prüfen)"; // Default
+        if (lastMessage.includes(MESSAGES.SEND_25_CODE)) codeType = "25€";
+        if (lastMessage.includes(MESSAGES.SEND_100_CODE)) codeType = "100€";
+
         const submittedCode = ctx.message.text.trim();
         const codePattern = /^[A-Z0-9]{32}$/;
 
@@ -40,55 +51,28 @@ const handlePrivateMessage = async (ctx) => {
             return;
         }
 
-        const userInfo = `📌 **Eingereichter Code (25€)**\n\n`
-            + `👤 Benutzer: ${ctx.from.first_name} (@${ctx.from.username || 'none'})\n`
-            + `🆔 **User ID:** ${ctx.from.id}\n`
-            + `🔢 **Code:** \`${submittedCode}\`\n`
-            + `💰 **Typ: ✅ 25€ Code**`;
+        console.log(`✅ Manuell erkannter Code-Typ: ${codeType}`);
+
+        const userInfo = `**Eingereichter Code**\n\n` +
+            `👤 Benutzer: ${ctx.from.first_name} (@${ctx.from.username || 'none'})\n` +
+            `🆔 **User ID:** ${ctx.from.id}\n` +
+            `🔢 **Code:** \`${submittedCode}\`\n` +
+            `💰 **Typ: ${codeType}**`;
 
         const keyboard = Markup.inlineKeyboard([
             [
-                Markup.button.callback('✅ Akzeptieren', `accept_25_${ctx.from.id}`),
-                Markup.button.callback('❌ Ablehnen', `deny_25_${ctx.from.id}`)
+                Markup.button.callback('✅ Akzeptieren', `accept_${ctx.from.id}`),
+                Markup.button.callback('❌ Ablehnen', `deny_${ctx.from.id}`)
             ],
             [Markup.button.callback('🎫 Ticket erstellen', `ticket_${ctx.from.id}`)]
         ]);
 
         await safeSendMessage(ctx, process.env.ADMIN_GROUP_ID, userInfo, keyboard);
-        await safeSendMessage(ctx, ctx.chat.id, MESSAGES.WAITING_APPROVAL);
+        await safeSendMessage(ctx, ctx.chat.id, codeType === "100€" ? MESSAGES.WAITING_100_APPROVAL : MESSAGES.WAITING_APPROVAL);
         return;
     }
 
-    // ✅ 100€ Code prüfen
-    if (ctx.message.reply_to_message?.text === MESSAGES.SEND_100_CODE) {
-        const submittedCode = ctx.message.text.trim();
-        const codePattern = /^[A-Z0-9]{32}$/;
-
-        if (!codePattern.test(submittedCode)) {
-            await safeSendMessage(ctx, ctx.chat.id, MESSAGES.INVALID_CODE_FORMAT);
-            return;
-        }
-
-        const userInfo = `📌 **Eingereichter Code (100€)**\n\n`
-            + `👤 Benutzer: ${ctx.from.first_name} (@${ctx.from.username || 'none'})\n`
-            + `🆔 **User ID:** ${ctx.from.id}\n`
-            + `🔢 **Code:** \`${submittedCode}\`\n`
-            + `💰 **Typ: ✅ 100€ Code**`;
-
-        const keyboard = Markup.inlineKeyboard([
-            [
-                Markup.button.callback('✅ Akzeptieren', `accept_100_${ctx.from.id}`),
-                Markup.button.callback('❌ Ablehnen', `deny_100_${ctx.from.id}`)
-            ],
-            [Markup.button.callback('🎫 Ticket erstellen', `ticket_${ctx.from.id}`)]
-        ]);
-
-        await safeSendMessage(ctx, process.env.ADMIN_GROUP_ID, userInfo, keyboard);
-        await safeSendMessage(ctx, ctx.chat.id, MESSAGES.WAITING_100_APPROVAL);
-        return;
-    }
-
-    // ✅ Support Nachricht weiterleiten (Fix für Support-System!)
+    // ✅ Wenn keine Antwort erkannt wurde, dann wird es als Support behandelt
     try {
         const threadId = await getOrCreateTopic(ctx, ctx.from.id);
         if (threadId) {
@@ -103,68 +87,10 @@ const handlePrivateMessage = async (ctx) => {
             });
             await safeSendMessage(ctx, ctx.chat.id, MESSAGES.MESSAGE_FORWARDED);
         }
-    } catch (error) {
-        console.error("❌ Fehler beim Weiterleiten der Support-Nachricht:", error);
-    }
-};
-
-// ✅ **Support Antwort weiterleiten**
-const handleSupportMessage = async (ctx) => {
-    if (!ctx.message.message_thread_id) {
-        return;
-    }
-
-    try {
-        const ticket = await Ticket.findOne({
-            where: {
-                threadId: ctx.message.message_thread_id.toString(),
-                status: 'open'
-            }
-        });
-
-        if (!ticket) {
-            return safeSendMessage(ctx, ctx.chat.id, MESSAGES.NO_TICKET_FOUND.replace('{threadId}', ctx.message.message_thread_id));
-        }
-
-        const supportResponse = MESSAGES.SUPPORT_RESPONSE;
-        let sent = false;
-
-        if (ctx.message.photo) {
-            sent = await safeSendPhoto(ctx, parseInt(ticket.userId), ctx.message.photo[ctx.message.photo.length - 1].file_id, {
-                caption: ctx.message.caption ? `${supportResponse}\n${ctx.message.caption}` : supportResponse
-            }) !== null;
-        } else if (ctx.message.document) {
-            sent = await safeSendDocument(ctx, parseInt(ticket.userId), ctx.message.document.file_id, {
-                caption: ctx.message.caption ? `${supportResponse}\n${ctx.message.caption}` : supportResponse
-            }) !== null;
-        } else if (ctx.message.video) {
-            sent = await safeSendVideo(ctx, parseInt(ticket.userId), ctx.message.video.file_id, {
-                caption: ctx.message.caption ? `${supportResponse}\n${ctx.message.caption}` : supportResponse
-            }) !== null;
-        } else if (ctx.message.text) {
-            sent = await safeSendMessage(ctx, parseInt(ticket.userId), `${supportResponse}\n${ctx.message.text}`) !== null;
-        }
-
-        if (sent) {
-            await safeSendMessage(ctx, ctx.chat.id, MESSAGES.MESSAGE_SENT_ADMIN, {
-                message_thread_id: ctx.message.message_thread_id
-            });
-        } else {
-            const errorMessage = MESSAGES.ERROR_SENDING_MESSAGE
-                .replace('{userId}', ticket.userId)
-                .replace('{username}', ticket.username || 'Kein Username');
-
-            await safeSendMessage(ctx, ctx.chat.id, errorMessage, {
-                message_thread_id: ctx.message.message_thread_id
-            });
-        }
-    } catch (error) {
-        console.error("❌ Fehler beim Senden der Support-Antwort:", error);
-    }
+    } catch (error) { }
 };
 
 // ✅ **Funktionen exportieren**
 module.exports = {
-    handlePrivateMessage,
-    handleSupportMessage
+    handlePrivateMessage
 };
