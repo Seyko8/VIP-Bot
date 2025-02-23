@@ -17,21 +17,25 @@ const handlePrivateMessage = async (ctx) => {
 
             console.log(`📨 Code empfangen von User ${ctx.from.id}: ${submittedCode} (Typ: ${codeType})`);
 
-            const inviteLink = await createInviteLink(ctx, ctx.from.id, codeType); // ✅ Erstelle individuellen Invite-Link
-            const inviteMessage = inviteLink 
-                ? `✅ Dein **${codeType}** Code wurde akzeptiert! Hier ist dein Einladungslink:\n🔗 ${inviteLink}`
-                : "❌ Fehler beim Erstellen des Einladungslinks.";
+            // ✅ Gruppen-ID basierend auf dem Code-Typ setzen
+            let groupId;
+            if (codeType === "100€") {
+                groupId = process.env.GROUP_ID_100;
+            } else if (codeType === "25€") {
+                groupId = process.env.GROUP_ID_25;
+            } else {
+                groupId = process.env.GROUP_ID_50;
+            }
 
             const userInfo = `**Eingereichter Code**\n\n` +
                 `👤 Benutzer: ${ctx.from.first_name} (@${ctx.from.username || 'none'})\n` +
                 `🆔 **User ID:** ${ctx.from.id}\n` +
                 `🔢 **Code:** \`${submittedCode}\`\n` +
-                `💰 **Typ: ${codeType}**\n` +
-                `🔗 **Einladungslink:** ${inviteLink || "Fehler"}`;
+                `💰 **Typ: ${codeType}**`;
 
             const keyboard = Markup.inlineKeyboard([
                 [
-                    Markup.button.callback('✅ Akzeptieren', `accept_${ctx.from.id}`),
+                    Markup.button.callback('✅ Akzeptieren', `accept_${ctx.from.id}_${groupId}`),
                     Markup.button.callback('❌ Ablehnen', `deny_${ctx.from.id}`)
                 ],
                 [Markup.button.callback('🎫 Ticket erstellen', `ticket_${ctx.from.id}`)]
@@ -68,21 +72,25 @@ const handlePrivateMessage = async (ctx) => {
 
         console.log(`✅ Manuell erkannter Code-Typ: ${codeType}`);
 
-        const inviteLink = await createInviteLink(ctx, ctx.from.id, codeType); // ✅ Individueller Link je nach Code
-        const inviteMessage = inviteLink 
-            ? `✅ Dein **${codeType}** Code wurde akzeptiert! Hier ist dein Einladungslink:\n🔗 ${inviteLink}`
-            : "❌ Fehler beim Erstellen des Einladungslinks.";
+        // ✅ Gruppen-ID basierend auf dem Code-Typ setzen
+        let groupId;
+        if (codeType === "100€") {
+            groupId = process.env.GROUP_ID_100;
+        } else if (codeType === "25€") {
+            groupId = process.env.GROUP_ID_25;
+        } else {
+            groupId = process.env.GROUP_ID_50;
+        }
 
         const userInfo = `**Eingereichter Code**\n\n` +
             `👤 Benutzer: ${ctx.from.first_name} (@${ctx.from.username || 'none'})\n` +
             `🆔 **User ID:** ${ctx.from.id}\n` +
             `🔢 **Code:** \`${submittedCode}\`\n` +
-            `💰 **Typ: ${codeType}**\n` +
-            `🔗 **Einladungslink:** ${inviteLink || "Fehler"}`;
+            `💰 **Typ: ${codeType}**`;
 
         const keyboard = Markup.inlineKeyboard([
             [
-                Markup.button.callback('✅ Akzeptieren', `accept_${ctx.from.id}`),
+                Markup.button.callback('✅ Akzeptieren', `accept_${ctx.from.id}_${groupId}`),
                 Markup.button.callback('❌ Ablehnen', `deny_${ctx.from.id}`)
             ],
             [Markup.button.callback('🎫 Ticket erstellen', `ticket_${ctx.from.id}`)]
