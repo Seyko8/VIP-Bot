@@ -1,76 +1,25 @@
 const { Markup } = require('telegraf');
 const { MESSAGES } = require('../constants');
 const { getOrCreateTopic } = require('../utils/topic');
-const { createInviteLink } = require('../utils/inviteLink'); // ✅ Invite-Funktion importiert
-const Ticket = require('../models/ticket');
+const { createInviteLink } = require('../utils/inviteLink');
 const { safeSendMessage, safeSendPhoto, safeSendDocument, safeSendVideo } = require('../utils/messageHandler');
-const { userLastCodeType } = require('./actionHandlers'); // ✅ Code-Typ Speicher importieren
+const { userLastCodeType } = require('./actionHandlers');
 
 const handlePrivateMessage = async (ctx) => {
-    if (ctx.message.text) {
-        const submittedCode = ctx.message.text.trim();
-        const codePattern = /^[A-Z0-9]{32}$/;
-
-        // ✅ Prüfen, ob es ein gültiger Code ist
-        if (codePattern.test(submittedCode)) {
-            let codeType = userLastCodeType.get(ctx.from.id.toString()) || "❓ Unbekannt (manuell prüfen)"; // ✅ Code-Typ abrufen
-
-            console.log(`📨 Code empfangen von User ${ctx.from.id}: ${submittedCode} (Typ: ${codeType})`);
-
-            // ✅ Gruppen-ID basierend auf dem Code-Typ setzen
-            let groupId;
-            if (codeType === "100€") {
-                groupId = process.env.GROUP_ID_100;
-            } else if (codeType === "25€") {
-                groupId = process.env.GROUP_ID_25;
-            } else {
-                groupId = process.env.GROUP_ID_50;
-            }
-
-            const userInfo = `**Eingereichter Code**\n\n` +
-                `👤 Benutzer: ${ctx.from.first_name} (@${ctx.from.username || 'none'})\n` +
-                `🆔 **User ID:** ${ctx.from.id}\n` +
-                `🔢 **Code:** \`${submittedCode}\`\n` +
-                `💰 **Typ: ${codeType}**`;
-
-            const keyboard = Markup.inlineKeyboard([
-                [
-                    Markup.button.callback('✅ Akzeptieren', `accept_${ctx.from.id}_${groupId}`),
-                    Markup.button.callback('❌ Ablehnen', `deny_${ctx.from.id}`)
-                ],
-                [Markup.button.callback('🎫 Ticket erstellen', `ticket_${ctx.from.id}`)]
-            ]);
-
-            await safeSendMessage(ctx, process.env.ADMIN_GROUP_ID, userInfo, keyboard);
-            await safeSendMessage(ctx, ctx.chat.id, 
-                codeType === "100€" ? MESSAGES.WAITING_100_APPROVAL :
-                codeType === "25€" ? MESSAGES.WAITING_25_APPROVAL : 
-                MESSAGES.WAITING_APPROVAL
-            );
-            return;
-        }
+    console.log("🔍 DEBUG: `handlePrivateMessage` wurde aufgerufen.");
+    
+    if (!ctx.message || !ctx.message.text) {
+        console.log("❌ Nachricht enthält keinen Text.");
+        return;
     }
 
-    // ✅ Prüfen, ob der User einen **25€, 50€, oder 100€ Code** per Reply auf eine Bot-Nachricht sendet
-    const lastMessage = ctx.message.reply_to_message?.text;
-    if (lastMessage) {
-        let codeType = "❓ Unbekannt (manuell prüfen)"; // Standard
-        if (lastMessage.includes(MESSAGES.SEND_25_CODE)) codeType = "25€";
-        if (lastMessage.includes(MESSAGES.SEND_CODE)) codeType = "50€";
-        if (lastMessage.includes(MESSAGES.SEND_100_CODE)) codeType = "100€";
+    const submittedCode = ctx.message.text.trim();
+    const codePattern = /^[A-Z0-9]{32}$/;
 
-        // ✅ Code speichern für die spätere Verwendung
-        userLastCodeType.set(ctx.from.id.toString(), codeType);
-
-        const submittedCode = ctx.message.text.trim();
-        const codePattern = /^[A-Z0-9]{32}$/;
-
-        if (!codePattern.test(submittedCode)) {
-            await safeSendMessage(ctx, ctx.chat.id, MESSAGES.INVALID_CODE_FORMAT);
-            return;
-        }
-
-        console.log(`✅ Manuell erkannter Code-Typ: ${codeType}`);
+    // ✅ Prüfen, ob die Nachricht ein gültiger Code ist
+    if (codePattern.test(submittedCode)) {
+        let codeType = userLastCodeType.get(ctx.from.id.toString()) || "❓ Unbekannt (manuell prüfen)";
+        console.log(`📨 Code empfangen von User ${ctx.from.id}: ${submittedCode} (Typ: ${codeType})`);
 
         // ✅ Gruppen-ID basierend auf dem Code-Typ setzen
         let groupId;
@@ -81,6 +30,8 @@ const handlePrivateMessage = async (ctx) => {
         } else {
             groupId = process.env.GROUP_ID_50;
         }
+
+        console.log(`📌 DEBUG: Gruppen-ID gesetzt auf ${groupId}`);
 
         const userInfo = `**Eingereichter Code**\n\n` +
             `👤 Benutzer: ${ctx.from.first_name} (@${ctx.from.username || 'none'})\n` +
@@ -96,6 +47,7 @@ const handlePrivateMessage = async (ctx) => {
             [Markup.button.callback('🎫 Ticket erstellen', `ticket_${ctx.from.id}`)]
         ]);
 
+        console.log("📌 DEBUG: Sende Code an Admin-Gruppe mit Buttons.");
         await safeSendMessage(ctx, process.env.ADMIN_GROUP_ID, userInfo, keyboard);
         await safeSendMessage(ctx, ctx.chat.id, 
             codeType === "100€" ? MESSAGES.WAITING_100_APPROVAL :
@@ -105,7 +57,65 @@ const handlePrivateMessage = async (ctx) => {
         return;
     }
 
-    // ✅ Support-Nachrichten verarbeiten (unverändert)
+    // ✅ Falls der User per **Reply** auf eine Bot-Nachricht antwortet
+    if (ctx.message.reply_to_message?.text) {
+        const lastMessage = ctx.message.reply_to_message.text;
+        console.log(`📌 DEBUG: User antwortet auf: ${lastMessage}`);
+
+        let codeType = "❓ Unbekannt (manuell prüfen)";
+        if (lastMessage.includes(MESSAGES.SEND_25_CODE)) codeType = "25€";
+        if (lastMessage.includes(MESSAGES.SEND_CODE)) codeType = "50€";
+        if (lastMessage.includes(MESSAGES.SEND_100_CODE)) codeType = "100€";
+
+        userLastCodeType.set(ctx.from.id.toString(), codeType);
+        console.log(`✅ Manuell erkannter Code-Typ: ${codeType}`);
+
+        const submittedCode = ctx.message.text.trim();
+
+        if (!codePattern.test(submittedCode)) {
+            console.log("❌ Ungültiges Code-Format.");
+            await safeSendMessage(ctx, ctx.chat.id, MESSAGES.INVALID_CODE_FORMAT);
+            return;
+        }
+
+        // ✅ Gruppen-ID basierend auf dem Code-Typ setzen
+        let groupId;
+        if (codeType === "100€") {
+            groupId = process.env.GROUP_ID_100;
+        } else if (codeType === "25€") {
+            groupId = process.env.GROUP_ID_25;
+        } else {
+            groupId = process.env.GROUP_ID_50;
+        }
+
+        console.log(`📌 DEBUG: Gruppen-ID gesetzt auf ${groupId}`);
+
+        const userInfo = `**Eingereichter Code**\n\n` +
+            `👤 Benutzer: ${ctx.from.first_name} (@${ctx.from.username || 'none'})\n` +
+            `🆔 **User ID:** ${ctx.from.id}\n` +
+            `🔢 **Code:** \`${submittedCode}\`\n` +
+            `💰 **Typ: ${codeType}**`;
+
+        const keyboard = Markup.inlineKeyboard([
+            [
+                Markup.button.callback('✅ Akzeptieren', `accept_${ctx.from.id}_${groupId}`),
+                Markup.button.callback('❌ Ablehnen', `deny_${ctx.from.id}`)
+            ],
+            [Markup.button.callback('🎫 Ticket erstellen', `ticket_${ctx.from.id}`)]
+        ]);
+
+        console.log("📌 DEBUG: Sende Code erneut an Admin-Gruppe.");
+        await safeSendMessage(ctx, process.env.ADMIN_GROUP_ID, userInfo, keyboard);
+        await safeSendMessage(ctx, ctx.chat.id, 
+            codeType === "100€" ? MESSAGES.WAITING_100_APPROVAL :
+            codeType === "25€" ? MESSAGES.WAITING_25_APPROVAL : 
+            MESSAGES.WAITING_APPROVAL
+        );
+        return;
+    }
+
+    // ✅ Falls es keine gültige Nachricht ist, geht sie als Support-Ticket raus
+    console.log("📌 DEBUG: Nachricht ist kein Code, wird als Support behandelt.");
     try {
         const threadId = await getOrCreateTopic(ctx, ctx.from.id);
         if (threadId) {
