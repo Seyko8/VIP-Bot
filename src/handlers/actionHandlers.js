@@ -4,7 +4,22 @@ const { getOrCreateTopic } = require('../utils/topic');
 const { createInviteLink } = require('../utils/inviteLink');
 const { safeSendMessage, safeEditMessageText } = require('../utils/messageHandler');
 
+// Speichert, welchen Code-Typ der User zuletzt ausgewählt hat
+const userLastCodeType = new Map();
+
 const actionHandlers = {
+    redeem_25: async (ctx) => {
+        console.log(`🔍 25€ Code einlösen angefordert von User: ${ctx.from.id}`);
+        userLastCodeType.set(ctx.from.id, "25€"); // Code-Typ speichern
+        await safeSendMessage(ctx, ctx.chat.id, MESSAGES.SEND_25_CODE);
+    },
+
+    redeem_100: async (ctx) => {
+        console.log(`🔍 100€ Code einlösen angefordert von User: ${ctx.from.id}`);
+        userLastCodeType.set(ctx.from.id, "100€"); // Code-Typ speichern
+        await safeSendMessage(ctx, ctx.chat.id, MESSAGES.SEND_100_CODE);
+    },
+
     redeem: async (ctx) => {
         await safeEditMessageText(ctx, MESSAGES.WELCOME);
         await safeSendMessage(ctx, ctx.chat.id, MESSAGES.SEND_CODE, {
@@ -80,5 +95,6 @@ const handleTicketCreation = async (ctx, userId) => {
 module.exports = {
     handleAction,
     handleTicketCreation,
-    actionHandlers
+    actionHandlers,
+    userLastCodeType // WICHTIG: Hier exportieren, damit `messageHandlers.js` darauf zugreifen kann
 };
