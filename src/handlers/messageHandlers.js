@@ -48,8 +48,8 @@ const handlePrivateMessage = async (ctx) => {
 
         const keyboard = Markup.inlineKeyboard([
             [
-                Markup.button.callback('✅ Akzeptieren', `accept_${ctx.from.id}`),
-                Markup.button.callback('❌ Ablehnen', `deny_${ctx.from.id}`)
+                Markup.button.callback('✅ Akzeptieren', `accept_25_${ctx.from.id}`),
+                Markup.button.callback('❌ Ablehnen', `deny_25_${ctx.from.id}`)
             ],
             [Markup.button.callback('🎫 Ticket erstellen', `ticket_${ctx.from.id}`)]
         ]);
@@ -77,8 +77,8 @@ const handlePrivateMessage = async (ctx) => {
 
         const keyboard = Markup.inlineKeyboard([
             [
-                Markup.button.callback('✅ Akzeptieren', `accept_${ctx.from.id}`),
-                Markup.button.callback('❌ Ablehnen', `deny_${ctx.from.id}`)
+                Markup.button.callback('✅ Akzeptieren', `accept_100_${ctx.from.id}`),
+                Markup.button.callback('❌ Ablehnen', `deny_100_${ctx.from.id}`)
             ],
             [Markup.button.callback('🎫 Ticket erstellen', `ticket_${ctx.from.id}`)]
         ]);
@@ -127,18 +127,22 @@ const handleSupportMessage = async (ctx) => {
         let sent = false;
         if (ctx.message.photo) {
             sent = await safeSendPhoto(ctx, parseInt(ticket.userId), ctx.message.photo[ctx.message.photo.length - 1].file_id, {
-                caption: ctx.message.caption ? `${supportResponse}\n${ctx.message.caption}` : supportResponse
+                caption: ctx.message.caption ? `${supportResponse}
+${ctx.message.caption}` : supportResponse
             }) !== null;
         } else if (ctx.message.document) {
             sent = await safeSendDocument(ctx, parseInt(ticket.userId), ctx.message.document.file_id, {
-                caption: ctx.message.caption ? `${supportResponse}\n${ctx.message.caption}` : supportResponse
+                caption: ctx.message.caption ? `${supportResponse}
+${ctx.message.caption}` : supportResponse
             }) !== null;
         } else if (ctx.message.video) {
             sent = await safeSendVideo(ctx, parseInt(ticket.userId), ctx.message.video.file_id, {
-                caption: ctx.message.caption ? `${supportResponse}\n${ctx.message.caption}` : supportResponse
+                caption: ctx.message.caption ? `${supportResponse}
+${ctx.message.caption}` : supportResponse
             }) !== null;
         } else if (ctx.message.text) {
-            sent = await safeSendMessage(ctx, parseInt(ticket.userId), `${supportResponse}\n${ctx.message.text}`) !== null;
+            sent = await safeSendMessage(ctx, parseInt(ticket.userId), `${supportResponse}
+${ctx.message.text}`) !== null;
         }
 
         if (sent) {
