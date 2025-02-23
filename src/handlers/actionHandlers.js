@@ -48,8 +48,18 @@ const actionHandlers = {
         const storedUserId = userId.toString();
         const codeType = userLastCodeType.get(storedUserId) || "50€"; // Falls kein Typ gespeichert ist, Standard = 50€
 
-        console.log(`🔍 Erstelle Invite-Link für User: ${userId} mit Code-Typ: ${codeType}`);
-        const inviteLink = await createInviteLink(ctx, userId, codeType);
+        // ✅ Die richtige Gruppen-ID setzen
+        let groupId;
+        if (codeType === "100€") {
+            groupId = process.env.GROUP_ID_100;
+        } else if (codeType === "25€") {
+            groupId = process.env.GROUP_ID_25;
+        } else {
+            groupId = process.env.GROUP_ID_50;
+        }
+
+        console.log(`🔍 Erstelle Invite-Link für User: ${userId} mit Code-Typ: ${codeType} und Gruppen-ID: ${groupId}`);
+        const inviteLink = await createInviteLink(ctx, userId, groupId);
 
         if (!inviteLink) {
             console.error("❌ Fehler beim Erstellen des Invite-Links!");
