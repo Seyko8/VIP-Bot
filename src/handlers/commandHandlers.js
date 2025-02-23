@@ -1,4 +1,4 @@
-const { Markup } = require('telegraf');
+ const { Markup } = require('telegraf');
 const { MESSAGES } = require('../constants');
 const Ticket = require('../models/ticket');
 const rateLimiter = require('../utils/rateLimiter');
@@ -12,7 +12,7 @@ const handleStart = (ctx) => {
     }
 
     const keyboard = Markup.inlineKeyboard([
-        [Markup.button.callback('🎫 Code einlösen', 'redeem')],
+        [Markup.button.callback('🎫 50€ Paket', 'redeem')],
         [Markup.button.callback('✉️ Support kontaktieren', 'ticket')]
     ]);
 
