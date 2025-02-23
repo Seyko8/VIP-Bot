@@ -1,0 +1,15 @@
+{
+  "name": "telegram-vip-bot",
+  "version": "1.0.0",
+  "main": "src/bot.js",
+  "dependencies": {
+    "telegraf": "^4.15.3",
+    "dotenv": "^16.3.1",
+    "pg": "^8.11.3",
+    "pg-hstore": "^2.3.4",
+    "sequelize": "^6.37.1"
+  },
+  "scripts": {
+    "start": "node src/bot.js"
+  }
+} 
