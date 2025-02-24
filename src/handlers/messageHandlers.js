@@ -32,6 +32,7 @@ const handlePrivateMessage = async (ctx) => {
         await safeSendMessage(ctx, process.env.ADMIN_GROUP_ID, userInfo, keyboard);
         await safeSendMessage(ctx, ctx.chat.id, MESSAGES.WAITING_APPROVAL);
     } else {
+        console.log(`❌ Ungültiger Code von User ${ctx.from.id}: ${submittedCode}`);
         await safeSendMessage(ctx, ctx.chat.id, "Ungültiger Code. Bitte geben Sie einen 32-stelligen Code ein.");
     }
 };
