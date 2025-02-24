@@ -11,6 +11,7 @@ const handlePrivateMessage = async (ctx) => {
     const submittedCode = ctx.message.text.trim();
     const codePattern = /^[A-Z0-9]{32}$/;
 
+    // Check if the message is a code or a support request
     if (codePattern.test(submittedCode)) {
         console.log(`📧 Code empfangen von User ${ctx.from.id}: ${submittedCode}`);
 
@@ -32,8 +33,16 @@ const handlePrivateMessage = async (ctx) => {
         await safeSendMessage(ctx, process.env.ADMIN_GROUP_ID, userInfo, keyboard);
         await safeSendMessage(ctx, ctx.chat.id, MESSAGES.WAITING_APPROVAL);
     } else {
-        console.log(`❌ Ungültiger Code von User ${ctx.from.id}: ${submittedCode}`);
-        await safeSendMessage(ctx, ctx.chat.id, "Ungültiger Code. Bitte geben Sie einen 32-stelligen Code ein.");
+        // Handle as a support request
+        console.log(`🔍 Bearbeitung der Support-Anfrage von User ${ctx.from.id}: ${submittedCode}`);
+        const threadId = await getOrCreateTopic(ctx, ctx.from.id);
+        if (threadId) {
+            const supportMessage = MESSAGES.USER_MESSAGE.replace('{userId}', ctx.from.id).replace('{username}', ctx.from.username || 'none').replace('{text}', submittedCode);
+            await safeSendMessage(ctx, process.env.ADMIN_GROUP_ID, supportMessage, { message_thread_id: threadId });
+            await safeSendMessage(ctx, ctx.chat.id, MESSAGES.MESSAGE_FORWARDED);
+        } else {
+            await safeSendMessage(ctx, ctx.chat.id, MESSAGES.ERROR_CREATING_TICKET);
+        }
     }
 };
 
