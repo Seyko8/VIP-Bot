@@ -10,19 +10,19 @@ const userLastCodeType = new Map();
 const actionHandlers = {
     redeem_25: async (ctx) => {
         console.log(`🔍 25€ Code angefordert von User: ${ctx.from.id}`);
-        userLastCodeType.set(ctx.from.id.toString(), "25€");
+        ctx.userLastCodeType.set(ctx.from.id.toString(), "25€");
         await safeSendMessage(ctx, ctx.chat.id, MESSAGES.SEND_25_CODE);
     },
 
     redeem_100: async (ctx) => {
         console.log(`🔍 100€ Code angefordert von User: ${ctx.from.id}`);
-        userLastCodeType.set(ctx.from.id.toString(), "100€");
+        ctx.userLastCodeType.set(ctx.from.id.toString(), "100€");
         await safeSendMessage(ctx, ctx.chat.id, MESSAGES.SEND_100_CODE);
     },
 
     redeem: async (ctx) => {
         console.log(`🔍 50€ Code angefordert von User: ${ctx.from.id}`);
-        userLastCodeType.set(ctx.from.id.toString(), "50€");
+        ctx.userLastCodeType.set(ctx.from.id.toString(), "50€");
         await safeSendMessage(ctx, ctx.chat.id, MESSAGES.SEND_CODE);
     },
 
@@ -46,7 +46,7 @@ const actionHandlers = {
 
         // ✅ **Code-Typ aus der Map abrufen**
         const storedUserId = userId.toString();
-        const codeType = userLastCodeType.get(storedUserId) || "50€"; // Falls kein Typ gespeichert ist, Standard = 50€
+        const codeType = ctx.userLastCodeType.get(storedUserId) || "50€"; // Falls kein Typ gespeichert ist, Standard = 50€
 
         // ✅ **Gruppen-ID anhand des Code-Typs aus ENV**
         let groupId;
@@ -115,7 +115,7 @@ const handleAction = async (ctx) => {
     }
 
     try {
-        console.log(`🔍 Verarbeite Aktion: ${action} für User: ${userId} | Code-Typ: ${userLastCodeType.get(userId)}`);
+        console.log(`🔍 Verarbeite Aktion: ${action} für User: ${userId} | Code-Typ: ${ctx.userLastCodeType.get(userId)}`);
         return await handler(ctx, userId);
     } catch (error) {
         console.error(`❌ Fehler bei der Ausführung der Aktion ${action}:`, error);
