@@ -40,8 +40,27 @@ bot.action('redeem', async (ctx) => {
 
 bot.action('faq-paket', async (ctx) => {
     console.log(`🔍 FAQ-Paket angefordert von User: ${ctx.from.id}`);
-    await ctx.reply("Hey, du kriegst...");
+    
+    const faqText = `
+📌 **FAQ – Häufig gestellte Fragen**  
+
+**• Sind direkte Zahlungen an ein Wallet möglich?**  
+✅ Ja! Schreib **[@VIPWalletDirekt](https://t.me/VIPWalletDirekt)** an, um die Zahlungsinformationen zu erhalten.  
+
+**• Ist der VIP-Status einmalig?**  
+✅ Ja, sobald du einmal VIP bist, bleibst du für immer drin!  
+
+**• Kann ich nicht einfach per Bank oder PayPal zahlen?**  
+❌ Nein, wir akzeptieren **nur** Voucher-Codes.  
+
+**• Die genannte Seite schickt mir keinen Code, was tun?**  
+❗ Kein Stress! Du kannst deinen Voucher auch über eine **andere** Seite besorgen.  
+⚠️ **Achtung:** Falscheingaben bei den Codes führen zu einem **permanenten Bann** auf Worldskandi!  
+`;
+
+    await ctx.reply(faqText, { parse_mode: 'Markdown' });
 });
+
 
 // ✅ **Nachrichten-Handler (Code senden & Support)**
 bot.on('message', async (ctx) => {
