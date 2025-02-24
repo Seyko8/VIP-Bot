@@ -4,13 +4,13 @@ const { MESSAGES } = require('../constants');
 const getOrCreateTopic = async (ctx, userId) => {
     try {
         console.log("🔍 Suche nach einem bestehenden offenen Ticket für User:", userId);
-        let ticket = await Ticket.findOne({ 
-            where: { 
+        let ticket = await Ticket.findOne({
+            where: {
                 userId: userId.toString(),
                 status: 'open'
-            } 
+            }
         });
-        
+
         if (ticket) {
             console.log("🔍 Offenes Ticket gefunden. Überprüfe den Zugriff auf das Thema mit threadId:", ticket.threadId);
             try {
@@ -63,4 +63,4 @@ const getOrCreateTopic = async (ctx, userId) => {
     }
 }
 
-module.exports = { getOrCreateTopic }; 
+module.exports = { getOrCreateTopic };
