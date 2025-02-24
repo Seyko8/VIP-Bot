@@ -49,28 +49,40 @@ const actionHandlers = {
         const codeType = ctx.userLastCodeType.get(storedUserId) || "50€"; // Falls kein Typ gespeichert ist, Standard = 50€
 
         // ✅ **Gruppen-ID anhand des Code-Typs aus ENV**
-        let groupId;
+        let groupIds = [];
         if (codeType === "100€") {
-            groupId = process.env.GROUP_ID_100;
+            groupIds = [
+                process.env.GROUP_ID_100_1,
+                process.env.GROUP_ID_100_2,
+                process.env.GROUP_ID_100_3,
+                process.env.GROUP_ID_100_4,
+                process.env.GROUP_ID_100_5,
+            ];
         } else if (codeType === "25€") {
-            groupId = process.env.GROUP_ID_25;
+            groupIds = [process.env.GROUP_ID_25];
         } else {
-            groupId = process.env.GROUP_ID_50;
+            groupIds = [
+                process.env.GROUP_ID_50_1,
+                process.env.GROUP_ID_50_2,
+            ];
         }
 
-        console.log(`🔍 Gruppen-ID für ${codeType}: ${groupId}`);
+        console.log(`🔍 Gruppen-IDs für ${codeType}: ${groupIds}`);
 
-        if (!groupId) {
-            console.error("❌ Fehler: Gruppen-ID ist undefined!");
-            return safeSendMessage(ctx, ctx.chat.id, "⚠️ Fehler: Gruppen-ID nicht gefunden. Bitte prüfe die .env Datei!");
+        if (groupIds.includes(undefined)) {
+            console.error("❌ Fehler: Eine oder mehrere Gruppen-IDs sind undefined!");
+            return safeSendMessage(ctx, ctx.chat.id, "⚠️ Fehler: Eine oder mehrere Gruppen-IDs nicht gefunden. Bitte prüfe die .env Datei!");
         }
 
         // ✅ **Invite-Link generieren**
-        const inviteLink = await createInviteLink(ctx, userId, groupId);
-
-        if (!inviteLink) {
-            console.error("❌ Fehler beim Erstellen des Invite-Links!");
-            return safeSendMessage(ctx, ctx.chat.id, MESSAGES.ERROR_INVITE_LINK);
+        const inviteLinks = [];
+        for (let i = 0; i < (codeType === "100€" ? 5 : 2); i++) {
+            const inviteLink = await createInviteLink(ctx, userId, groupIds[i % groupIds.length]);
+            if (!inviteLink) {
+                console.error("❌ Fehler beim Erstellen des Invite-Links!");
+                return safeSendMessage(ctx, ctx.chat.id, MESSAGES.ERROR_INVITE_LINK);
+            }
+            inviteLinks.push(inviteLink);
         }
 
         // ✅ **Passende Nachricht basierend auf dem Code-Typ**
@@ -83,8 +95,8 @@ const actionHandlers = {
             message = MESSAGES.CODE_ACCEPTED;
         }
 
-        console.log(`✅ Invite-Link erstellt: ${inviteLink}`);
-        await safeSendMessage(ctx, userId, `${message}\n🔗 **Dein Invite-Link:**\n${inviteLink}`);
+        console.log(`✅ Invite-Links erstellt: ${inviteLinks.join('\n')}`);
+        await safeSendMessage(ctx, userId, `${message}\n🔗 **Deine Invite-Links:**\n${inviteLinks.join('\n')}`);
 
         const updatedMessage = `${ctx.callbackQuery.message.text}\n\nStatus: ✅ Akzeptiert`;
         return safeEditMessageText(ctx, updatedMessage);
