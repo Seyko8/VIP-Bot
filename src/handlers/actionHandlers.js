@@ -56,7 +56,6 @@ const actionHandlers = {
                 process.env.GROUP_ID_100_2,
                 process.env.GROUP_ID_100_3,
                 process.env.GROUP_ID_100_4,
-                process.env.GROUP_ID_100_5,
             ];
         } else if (codeType === "25€") {
             groupIds = [process.env.GROUP_ID_25];
@@ -77,7 +76,7 @@ const actionHandlers = {
         // ✅ **Invite-Link generieren**
         const inviteLinks = [];
         for (let i = 0; i < (codeType === "100€" ? 5 : 2); i++) {
-            const inviteLink = await createInviteLink(ctx, userId, groupIds[i % groupIds.length]);
+            const inviteLink = await createInviteLink(ctx, userId, groupIds[i % groupIds.length], { expires_in: 86400, member_limit: 1 });
             if (!inviteLink) {
                 console.error("❌ Fehler beim Erstellen des Invite-Links!");
                 return safeSendMessage(ctx, ctx.chat.id, MESSAGES.ERROR_INVITE_LINK);
