@@ -4,7 +4,7 @@ exports.MESSAGES = {
 So wirst du Mitglied:
 
 1️⃣ Kaufe einen Crypto Voucher über diesen Link:
-👉 Crypto Voucher
+👉 https://kartedirekt.de/zahlungsmittel/crypto-voucher
 
 💡 (NUR CRYPTO-VOUCHER!)
 
