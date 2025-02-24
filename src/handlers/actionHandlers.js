@@ -78,12 +78,22 @@ const actionHandlers = {
         const inviteLinks = [];
         const inviteLinkCount = codeType === "100€" ? 4 : (codeType === "25€" ? 1 : 2); // Ein Link für 25€, zwei Links für 50€
         for (let i = 0; i < inviteLinkCount; i++) {
-            const inviteLink = await createInviteLink(ctx, userId, groupIds[i % groupIds.length], { expires_in: 86400, member_limit: 1 });
-            if (!inviteLink) {
-                console.error("❌ Fehler beim Erstellen des Invite-Links!");
-                return safeSendMessage(ctx, ctx.chat.id, MESSAGES.ERROR_INVITE_LINK);
+            try {
+                const inviteLink = await createInviteLink(ctx, userId, groupIds[i % groupIds.length], { expires_in: 86400, member_limit: 1 });
+                if (!inviteLink) {
+                    console.error("❌ Fehler beim Erstellen des Invite-Links!");
+                    return safeSendMessage(ctx, ctx.chat.id, MESSAGES.ERROR_INVITE_LINK);
+                }
+                inviteLinks.push(inviteLink);
+            } catch (error) {
+                if (error.response && error.response.error_code === 403 && error.response.description.includes("bot was kicked")) {
+                    console.error("❌ Bot wurde aus der Gruppe entfernt:", groupIds[i % groupIds.length]);
+                    return safeSendMessage(ctx, ctx.chat.id, `❌ Fehler: Bot wurde aus der Gruppe entfernt: ${groupIds[i % groupIds.length]}`);
+                } else {
+                    console.error("❌ Fehler beim Erstellen des Invite-Links:", error.message);
+                    return safeSendMessage(ctx, ctx.chat.id, `❌ Fehler beim Erstellen des Invite-Links: ${error.message}`);
+                }
             }
-            inviteLinks.push(inviteLink);
         }
 
         // ✅ **Passende Nachricht basierend auf dem Code-Typ**
