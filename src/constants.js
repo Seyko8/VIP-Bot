@@ -1,21 +1,6 @@
 exports.MESSAGES = {
     WELCOME: `Willkommen bei unserem exklusiven VIP-Bereich! 🌟
     
-    So wirst du Mitglied:
-    
-    1️⃣ Kaufe einen 50€ Crypto Voucher über diesen Link:
-    
-    (NUR CRYPTO-VOUCHER)
-    
-    👉 https://kartedirekt.de/product/crypto-voucher-eur50
-    
-    ❗ Wichtig: Du kannst auf der Website mit Paypal zahlen, FALLS kein Code generiert werden kann versucht andere Seiten❗
-    
-    2️⃣ Deine Vorteile als VIP-Mitglied:
-        ✅ Regelmäßige Updates
-        ✅ Exklusive Inhalte
-        ✅ 24/7 Chat ohne Regeln
-    ‼️Und vieles mehr
     
     🚀 Sichere dir jetzt deinen VIP-Zugang!
     
