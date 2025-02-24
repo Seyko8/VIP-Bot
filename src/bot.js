@@ -42,20 +42,21 @@ bot.action('faq-paket', async (ctx) => {
     console.log(`🔍 FAQ-Paket angefordert von User: ${ctx.from.id}`);
 
     const faqText = `
-📌 **Ich hatte gekauft aber bin nicht mehr drinne**
-➡️ Leider wurden wir über Nacht am **24.2.** gehackt, und es wurden alle Mitglieder rausgeworfen. Wir haben jetzt eine **Datenbank** für euch aufgestockt, und jeder wird ebenfalls auf die **Website** mitgenommen!  
+📌 Ich hatte gekauft, aber bin nicht mehr drinne  
+➡️ Leider wurden wir über Nacht am 24.2. gehackt, und es wurden alle Mitglieder entfernt.  
+➡️ Wir haben jetzt eine Datenbank für euch aufgestockt, und jeder wird ebenfalls auf die Website mitgenommen.  
 
-💰 **Sind direkte Zahlungen an ein Wallet möglich?**
-➡️ Ja! Schreib **@VIPWalletDirekt** an, um die **Informationen** zu erhalten.  
+💰 Sind direkte Zahlungen an ein Wallet möglich?  
+➡️ Ja! Schreibe @VIPWalletDirekt an, um die Informationen zu erhalten.  
 
-👑 **Ist der VIP-Status einmalig?**
-➡️ Ja, sobald du **einmal** im **Ordner** bist, bleibst du **für immer** drinnen!  
+👑 Ist der VIP-Status einmalig?  
+➡️ Ja, sobald du einmal im Ordner bist, bleibst du für immer drinnen.  
 
-🏦 **Kann ich nicht einfach per Bank oder PayPal zahlen?**
-➡️ Nein, wir nehmen **nur** **Voucher Codes** an.  
+🏦 Kann ich nicht einfach per Bank oder PayPal zahlen?  
+➡️ Nein, wir akzeptieren ausschließlich Voucher-Codes.  
 
-❗ **Die genannte Seite schickt mir keinen Code, was tun?**
-➡️ Kein Stress, du kannst auch über eine **andere Seite** deinen **Voucher** besorgen.  
+❗ Die genannte Seite schickt mir keinen Code, was tun?  
+➡️ Kein Stress, du kannst auch über eine andere Seite deinen Voucher besorgen.  
     `;
 
     await ctx.reply(faqText);
