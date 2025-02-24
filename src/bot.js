@@ -17,7 +17,7 @@ bot.command('start', handleStart);
 bot.command('close', handleClose);
 
 bot.action(/^redeem$/, handleAction);
-bot.action(/^(accept|deny|ticket)_\d+$/, handleAction);
+bot.action(/^(accept|deny|ticket|faq)_\d+$/, handleAction);
 
 // ✅ **Markierung für 25€, 50€, 100€ Codes**
 bot.action('redeem_25', async (ctx) => {
@@ -36,6 +36,11 @@ bot.action('redeem', async (ctx) => {
     console.log(`🔍 50€ Code angefordert von User: ${ctx.from.id}`);
     ctx.userLastCodeType.set(ctx.from.id.toString(), "50€");
     await ctx.reply(MESSAGES.SEND_CODE);
+});
+
+bot.action('faq-paket', async (ctx) => {
+    console.log(`🔍 FAQ-Paket angefordert von User: ${ctx.from.id}`);
+    await ctx.reply("Hey, du kriegst...");
 });
 
 // ✅ **Nachrichten-Handler (Code senden & Support)**
