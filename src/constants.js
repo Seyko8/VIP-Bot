@@ -1,34 +1,27 @@
 exports.MESSAGES = {
     WELCOME: `Willkommen bei unserem exklusiven VIP-Bereich! 🌟
-\n
-\n
+    
     So wirst du Mitglied:
-\n
+    
     1️⃣ Kaufe einen 50€ Crypto Voucher über diesen Link:
-\n
+    
     (NUR CRYPTO-VOUCHER)
-\n
+    
     👉 https://kartedirekt.de/product/crypto-voucher-eur50
-\n
+    
     ❗ Wichtig: Du kannst auf der Website mit Paypal zahlen, FALLS kein Code generiert werden kann versucht andere Seiten❗
-\n
-\n
+    
     2️⃣ Deine Vorteile als VIP-Mitglied:
-\n
         ✅ Regelmäßige Updates
-\n
         ✅ Exklusive Inhalte
-\n
         ✅ 24/7 Chat ohne Regeln
-\n
     ‼️Und vieles mehr
-\n
+    
     🚀 Sichere dir jetzt deinen VIP-Zugang!
-\n
-\n
+    
     👉 Bitte klicke auf den Knopf "Code einlösen" um deinen Zugang zu erhalten.
-\n
-⚠️ Codes bitte nicht über Support versenden!!`,
+    
+    ⚠️ Codes bitte nicht über Support versenden!!`,
 
     WAITING_APPROVAL: 'Vielen Dank für deine Anfrage. Ein Admin wird sich schnellstmöglich um dich kümmern.',
     TICKET_CREATED: 'Dein Support-Ticket wurde erstellt. Bitte beschreibe dein Anliegen.',
@@ -57,7 +50,7 @@ exports.MESSAGES = {
     ERROR_CLOSING_TICKET: 'Fehler beim Schließen des Tickets.',
     NO_TICKET_FOUND: 'Kein aktives Ticket gefunden.\n\nThread ID: {threadId}\nBitte prüfe die Datenbank oder erstelle ein neues Ticket.',
     MESSAGE_SENT_ADMIN: '✅ Nachricht wurde an den User weitergeleitet.',
-    ERROR_SENDING_MESSAGE: '❌ Fehler beim Senden der Nachricht an den User.\n\nUser ID: {userId}\nUsername: {username}\n\nMögliche Gründe:\n- User hat den Bot blockiert\n- User-Account wurde gelöscht\n- Bot wurde vom User gestoppt',
+    ERROR_SENDING_MESSAGE: '❌ Fehler beim Senden der Nachricht an den User.\n\nUser ID: {userId}\nUsername: {username}\n\nMögliche Gründe:\n- User hat den Bot blockiert\n- User-Account wurde gelöscht\n- Chat nicht gefunden',
     TICKET_AUTO_CLOSED: 'Ticket wurde automatisch geschlossen.',
     SUPPORT_RESPONSE: 'Support Antwort:',
     USER_MESSAGE: 'Von User {userId}{username}:\n{text}',
