@@ -38,10 +38,12 @@ const handlePrivateMessage = async (ctx) => {
 
 const handleSupportMessage = async (ctx) => {
     if (!ctx.message.message_thread_id) {
+        console.log("🔍 Keine message_thread_id in der Nachricht gefunden.");
         return;
     }
 
     try {
+        console.log("🔍 Suche nach einem offenen Ticket mit threadId:", ctx.message.message_thread_id);
         const ticket = await Ticket.findOne({
             where: {
                 threadId: ctx.message.message_thread_id.toString(),
@@ -50,6 +52,7 @@ const handleSupportMessage = async (ctx) => {
         });
 
         if (!ticket) {
+            console.log("❌ Kein offenes Ticket gefunden für threadId:", ctx.message.message_thread_id);
             return safeSendMessage(ctx, ctx.chat.id, MESSAGES.NO_TICKET_FOUND.replace('{threadId}', ctx.message.message_thread_id));
         }
 
@@ -57,6 +60,7 @@ const handleSupportMessage = async (ctx) => {
         const supportResponse = MESSAGES.SUPPORT_RESPONSE;
 
         if (ctx.message.text) {
+            console.log("🔍 Sende Support-Nachricht an User:", ticket.userId);
             const result = await safeSendMessage(
                 ctx,
                 parseInt(ticket.userId),
@@ -66,10 +70,12 @@ const handleSupportMessage = async (ctx) => {
         }
 
         if (sent) {
+            console.log("✅ Nachricht erfolgreich an User gesendet:", ticket.userId);
             await safeSendMessage(ctx, ctx.chat.id, MESSAGES.MESSAGE_SENT_ADMIN, {
                 message_thread_id: ctx.message.message_thread_id
             });
         } else {
+            console.log("❌ Fehler beim Senden der Nachricht an User:", ticket.userId);
             const errorMessage = MESSAGES.ERROR_SENDING_MESSAGE
                 .replace('{userId}', ticket.userId)
                 .replace('{username}', ticket.username || 'Kein Username');
