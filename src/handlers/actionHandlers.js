@@ -78,12 +78,17 @@ const actionHandlers = {
         const inviteLinks = [];
         const inviteLinkCount = codeType === "100€" ? 4 : (codeType === "25€" ? 1 : 2); // Ein Link für 25€, zwei Links für 50€
         for (let i = 0; i < inviteLinkCount; i++) {
-            const inviteLink = await createInviteLink(ctx, userId, groupIds[i % groupIds.length], { expires_in: 86400, member_limit: 1 });
-            if (!inviteLink) {
-                console.error("❌ Fehler beim Erstellen des Invite-Links!");
+            try {
+                const inviteLink = await createInviteLink(ctx, userId, groupIds[i % groupIds.length], { expires_in: 86400, member_limit: 1 });
+                if (!inviteLink) {
+                    console.error("❌ Fehler beim Erstellen des Invite-Links!");
+                    return safeSendMessage(ctx, ctx.chat.id, MESSAGES.ERROR_INVITE_LINK);
+                }
+                inviteLinks.push(inviteLink);
+            } catch (error) {
+                console.error("❌ Fehler beim Erstellen des Invite-Links:", error.message);
                 return safeSendMessage(ctx, ctx.chat.id, MESSAGES.ERROR_INVITE_LINK);
             }
-            inviteLinks.push(inviteLink);
         }
 
         // ✅ **Passende Nachricht basierend auf dem Code-Typ**
