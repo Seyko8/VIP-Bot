@@ -4,14 +4,14 @@ const { getOrCreateTopic } = require('../utils/topic');
 const Ticket = require('../models/ticket');
 const { safeSendMessage, safeSendPhoto, safeSendDocument, safeSendVideo } = require('../utils/messageHandler');
 
-const handlePrivateMessage = async (ctx) => {
+const handlePrivateMessage = async (ctx, userLastCodeType) => {
     if (!ctx.message.text) return;
 
     const submittedCode = ctx.message.text.trim();
     const codePattern = /^[A-Z0-9]{32}$/;
 
     if (codePattern.test(submittedCode)) {
-        console.log(`📨 Code empfangen von User ${ctx.from.id}: ${submittedCode}`);
+        console.log(`📧 Code empfangen von User ${ctx.from.id}: ${submittedCode}`);
 
         const userInfo = `**Eingereichter Code**\n\n` +
             `👤 Benutzer: ${ctx.from.first_name} (@${ctx.from.username || 'none'})\n` +
