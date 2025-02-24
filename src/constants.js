@@ -16,19 +16,18 @@ Deine Vorteile als VIP-Mitglied:
 ✅ Regelmäßige Updates
 ✅ Exklusive Inhalte
 ✅ 24/7 Chat ohne Regeln
-✅Für VIP+ member mehrere Speicher Funktionen!
+✅ Für VIP+ Member mehrere Speicherfunktionen!
 ‼️ Und vieles mehr!
 
 VIP-Pakete:
 
-💰 25€ 24H Paket: •Eine 24H Gruppe ohne Schließung und nie endenden Videos und Bilder! 
-💎 50€ VIP Paket: •Unser VIP Ordner Paket mit über 190 von euch gefragten OF,MYM und breezels leaks
-👑 100€ VIP+ Paket: •Die oben genannten Punkte + Eine Speicher Funktion für die 24H Gruppe  + Zusendung von allen Videos die in die Hauptgruppe geschickt werden!
-
+💰 25€ 24H Paket: •Eine 24H Gruppe ohne Schließung und nie endende Videos und Bilder! 
+💎 50€ VIP Paket: •Unser VIP-Ordner-Paket mit über 190 von euch gefragten OF, MYM und Breezels-Leaks
+👑 100€ VIP+ Paket: •Die oben genannten Punkte + Eine Speicherfunktion für die 24H Gruppe + Zusendung von allen Videos, die in die Hauptgruppe geschickt werden!
 
 👉 Klicke auf den Knopf “Code einlösen”, um deinen Zugang zu erhalten.
 
-⚠️ Codes bitte nicht über den Support versenden! ⚠️
+⚠️ Codes bitte nicht über den Support versenden! ⚠️`,
 
     WAITING_APPROVAL: 'Vielen Dank für deine Anfrage. Ein Admin wird sich schnellstmöglich um dich kümmern.',
     TICKET_CREATED: 'Dein Support-Ticket wurde erstellt. Bitte beschreibe dein Anliegen.',
