@@ -87,7 +87,7 @@ const actionHandlers = {
                 inviteLinks.push(inviteLink);
             } catch (error) {
                 console.error("❌ Fehler beim Erstellen des Invite-Links:", error.message);
-                return safeSendMessage(ctx, ctx.chat.id, MESSAGES.ERROR_INVITE_LINK);
+                return safeSendMessage(ctx, ctx.chat.id, `❌ Fehler beim Erstellen des Invite-Links: ${error.message}`);
             }
         }
 
