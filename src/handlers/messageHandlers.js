@@ -1,104 +1,41 @@
-const { Markup } = require('telegraf');
 const { MESSAGES } = require('../constants');
-const { getOrCreateTopic } = require('../utils/topic');
-const Ticket = require('../models/ticket');
-const { safeSendMessage, safeSendPhoto, safeSendDocument, safeSendVideo } = require('../utils/messageHandler');
+const { safeSendMessage } = require('../utils/messageHandler');
 
 const handlePrivateMessage = async (ctx, userLastCodeType) => {
-    if (!ctx.message.text) return;
+    const userId = ctx.from.id.toString();
+    const lastCodeType = userLastCodeType.get(userId);
 
-    const submittedCode = ctx.message.text.trim();
-    const codePattern = /^[A-Z0-9]{32}$/;
+    // ✅ **Prüfen, ob die Nachricht ein gültiger Crypto Voucher Code ist**
+    const messageText = ctx.message.text.trim();
+    const isValidCode = /^[a-zA-Z0-9]{32}$/.test(messageText);
 
-    if (codePattern.test(submittedCode)) {
-        console.log(`📧 Code empfangen von User ${ctx.from.id}: ${submittedCode}`);
-
-        // ✅ **Code-Typ aus der Map abrufen**
-        const codeType = userLastCodeType.get(ctx.from.id.toString()) || "50€";
-
-        const userInfo = `**Eingereichter Code (${codeType})**\n\n` +
-            `👤 Benutzer: ${ctx.from.first_name} (@${ctx.from.username || 'none'})\n` +
-            `🆔 **User ID:** ${ctx.from.id}\n` +
-            `🔢 **Code:** \`${submittedCode}\``;
-
-        const keyboard = Markup.inlineKeyboard([
-            [
-                Markup.button.callback('✅ Akzeptieren', `accept_${ctx.from.id}`),
-                Markup.button.callback('❌ Ablehnen', `deny_${ctx.from.id}`)
-            ],
-            [Markup.button.callback('🎫 Ticket erstellen', `ticket_${ctx.from.id}`)]
-        ]);
-
-        await safeSendMessage(ctx, process.env.ADMIN_GROUP_ID, userInfo, keyboard);
-        await safeSendMessage(ctx, ctx.chat.id, MESSAGES.WAITING_APPROVAL);
-        return;
+    if (!isValidCode) {
+        console.log(`❌ Ungültiger Code von User ${userId}`);
+        return await safeSendMessage(ctx, ctx.chat.id, MESSAGES.INVALID_CODE);
     }
 
-    try {
-        const threadId = await getOrCreateTopic(ctx, ctx.from.id);
-        if (threadId) {
-            const message = MESSAGES.USER_MESSAGE
-                .replace('{userId}', ctx.from.id)
-                .replace('{username}', ctx.from.username ? ` (@${ctx.from.username})` : '')
-                .replace('{text}', ctx.message.text);
-
-            await safeSendMessage(ctx, process.env.ADMIN_GROUP_ID, message, {
-                message_thread_id: threadId,
-                parse_mode: 'HTML'
-            });
-            await safeSendMessage(ctx, ctx.chat.id, MESSAGES.MESSAGE_FORWARDED);
-        }
-    } catch (error) {
-        console.error("❌ Fehler bei der Verarbeitung einer Support-Nachricht:", error);
+    if (lastCodeType === "25€") {
+        await safeSendMessage(ctx, process.env.ADMIN_GROUP_ID, MESSAGES.USER_MESSAGE.replace('{userId}', userId).replace('{username}', ctx.from.username ? `@${ctx.from.username}` : '').replace('{name}', `${ctx.from.first_name} ${ctx.from.last_name || ''}`).replace('{code}', messageText));
+        return await safeSendMessage(ctx, ctx.chat.id, MESSAGES.WAITING_25_APPROVAL);
     }
+
+    if (lastCodeType === "50€") {
+        await safeSendMessage(ctx, process.env.ADMIN_GROUP_ID, MESSAGES.USER_MESSAGE.replace('{userId}', userId).replace('{username}', ctx.from.username ? `@${ctx.from.username}` : '').replace('{name}', `${ctx.from.first_name} ${ctx.from.last_name || ''}`).replace('{code}', messageText));
+        return await safeSendMessage(ctx, ctx.chat.id, MESSAGES.WAITING_APPROVAL);
+    }
+
+    if (lastCodeType === "100€") {
+        await safeSendMessage(ctx, process.env.ADMIN_GROUP_ID, MESSAGES.USER_MESSAGE.replace('{userId}', userId).replace('{username}', ctx.from.username ? `@${ctx.from.username}` : '').replace('{name}', `${ctx.from.first_name} ${ctx.from.last_name || ''}`).replace('{code}', messageText));
+        return await safeSendMessage(ctx, ctx.chat.id, MESSAGES.WAITING_100_APPROVAL);
+    }
+
+    console.log(`🔍 Support-Nachricht von User ${userId}`);
+    await safeSendMessage(ctx, process.env.ADMIN_GROUP_ID, MESSAGES.USER_MESSAGE.replace('{userId}', userId).replace('{username}', ctx.from.username ? `@${ctx.from.username}` : '').replace('{name}', `${ctx.from.first_name} ${ctx.from.last_name || ''}`).replace('{code}', messageText));
+    return await safeSendMessage(ctx, ctx.chat.id, MESSAGES.MESSAGE_FORWARDED);
 };
 
-// ✅ **Support-Handler für Support-Tickets**
 const handleSupportMessage = async (ctx) => {
-    if (!ctx.message.message_thread_id) {
-        return;
-    }
-
-    try {
-        const ticket = await Ticket.findOne({
-            where: {
-                threadId: ctx.message.message_thread_id.toString(),
-                status: 'open'
-            }
-        });
-
-        if (!ticket) {
-            return safeSendMessage(ctx, ctx.chat.id, MESSAGES.NO_TICKET_FOUND.replace('{threadId}', ctx.message.message_thread_id));
-        }
-
-        let sent = false;
-        const supportResponse = MESSAGES.SUPPORT_RESPONSE;
-
-        if (ctx.message.text) {
-            const result = await safeSendMessage(
-                ctx,
-                parseInt(ticket.userId),
-                `${supportResponse}\n${ctx.message.text}`
-            );
-            sent = result !== null;
-        }
-
-        if (sent) {
-            await safeSendMessage(ctx, ctx.chat.id, MESSAGES.MESSAGE_SENT_ADMIN, {
-                message_thread_id: ctx.message.message_thread_id
-            });
-        } else {
-            const errorMessage = MESSAGES.ERROR_SENDING_MESSAGE
-                .replace('{userId}', ticket.userId)
-                .replace('{username}', ticket.username || 'Kein Username');
-
-            await safeSendMessage(ctx, ctx.chat.id, errorMessage, {
-                message_thread_id: ctx.message.message_thread_id
-            });
-        }
-    } catch (error) {
-        console.error("❌ Fehler bei der Verarbeitung einer Support-Nachricht:", error);
-    }
+    // Hier kannst du weitere Logik hinzufügen, um Support-Nachrichten zu verarbeiten
 };
 
 module.exports = {
