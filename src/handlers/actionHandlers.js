@@ -1,8 +1,8 @@
-const { Markup } = require('telegraf');
-const { MESSAGES } = require('../constants');
-const { getOrCreateTopic } = require('../utils/topic');
-const { createInviteLink } = require('../utils/inviteLink');
-const { safeSendMessage, safeEditMessageText } = require('../utils/messageHandler');
+const { Markup } = require("telegraf");
+const { MESSAGES } = require("../constants");
+const { getOrCreateTopic } = require("../utils/topic");
+const { createInviteLink } = require("../utils/inviteLink");
+const { safeSendMessage, safeEditMessageText } = require("../utils/messageHandler");
 
 // ✅ **Speichert den letzten Code-Typ (25€, 50€, 100€) pro User**
 const userLastCodeType = new Map();
@@ -49,7 +49,7 @@ const actionHandlers = {
         const storedUserId = userId.toString();
         const codeType = userLastCodeType.get(storedUserId) || "50€"; // Falls kein Typ gespeichert ist, Standard = 50€
 
-        // ✅ **Gruppen-ID anhand des Code-Typs aus ENV**
+        // ✅ **Gruppen-IDs anhand des Code-Typs aus ENV**
         let groupIds = [];
         if (codeType === "100€") {
             groupIds = [
@@ -78,31 +78,30 @@ const actionHandlers = {
         const inviteLinks = [];
         const inviteLinkCount = codeType === "100€" ? 4 : (codeType === "25€" ? 1 : 2); // Ein Link für 25€, zwei Links für 50€
         for (let i = 0; i < inviteLinkCount; i++) {
+            if (!groupIds[i]) {
+                console.warn(`⚠️ Gruppe ${i + 1} existiert nicht oder wurde entfernt.`);
+                continue;
+            }
+
             try {
-                const inviteLink = await createInviteLink(ctx, userId, groupIds[i % groupIds.length], { expires_in: 86400, member_limit: 1 });
-                if (!inviteLink) {
-                    console.error("❌ Fehler beim Erstellen des Invite-Links!");
-                    return safeSendMessage(ctx, ctx.chat.id, MESSAGES.ERROR_INVITE_LINK);
-                }
+                await new Promise(resolve => setTimeout(resolve, 2000)); // ⏳ 2 Sekunden Pause pro Link (Rate-Limit umgehen)
+                const inviteLink = await createInviteLink(ctx, userId, groupIds[i], { expires_in: 86400, member_limit: 1 });
                 inviteLinks.push(inviteLink);
             } catch (error) {
-                console.error("❌ Fehler beim Erstellen des Invite-Links:", error.message);
-                return safeSendMessage(ctx, ctx.chat.id, `❌ Fehler beim Erstellen des Invite-Links: ${error.message}`);
+                if (error.response && error.response.error_code === 403) {
+                    console.error(`❌ Fehler: Bot wurde aus der Gruppe ${groupIds[i]} entfernt!`);
+                    return safeSendMessage(ctx, ctx.chat.id, `❌ Fehler: Der Bot wurde aus einer Gruppe entfernt und kann keine Einladungslinks mehr erstellen. Bitte Admin kontaktieren.`);
+                }
+                console.error(`❌ Fehler beim Erstellen des Invite-Links für Gruppe ${groupIds[i]}:`, error.message);
             }
         }
 
-        // ✅ **Passende Nachricht basierend auf dem Code-Typ**
-        let message;
-        if (codeType === "100€") {
-            message = MESSAGES.CODE_100_ACCEPTED;
-        } else if (codeType === "25€") {
-            message = MESSAGES.CODE_25_ACCEPTED;
-        } else {
-            message = MESSAGES.CODE_ACCEPTED;
+        if (inviteLinks.length === 0) {
+            return safeSendMessage(ctx, ctx.chat.id, "❌ Fehler: Keine gültigen Einladungslinks generiert.");
         }
 
-        console.log(`✅ Invite-Links erstellt: ${inviteLinks.join('\n')}`);
-        await safeSendMessage(ctx, userId, `${message}\n🔗 **Deine Invite-Links:**\n${inviteLinks.join('\n')}`);
+        console.log(`✅ Invite-Links erstellt: ${inviteLinks.join("\n")}`);
+        await safeSendMessage(ctx, userId, `✅ **Zugang genehmigt!**\n🔗 **Deine Invite-Links:**\n${inviteLinks.join("\n")}`);
 
         const updatedMessage = `${ctx.callbackQuery.message.text}\n\nStatus: ✅ Akzeptiert`;
         return safeEditMessageText(ctx, updatedMessage);
@@ -111,20 +110,20 @@ const actionHandlers = {
     deny: async (ctx, userId) => {
         console.log(`❌ Code für User ${userId} abgelehnt.`);
         const keyboard = Markup.inlineKeyboard([
-            [Markup.button.callback('✉️ Support kontaktieren', `ticket_${userId}`)]
+            [Markup.button.callback("✉️ Support kontaktieren", `ticket_${userId}`)],
         ]);
 
         const updatedMessage = `${ctx.callbackQuery.message.text}\n\nStatus: ❌ Abgelehnt`;
         await safeSendMessage(ctx, userId, MESSAGES.CODE_DENIED, keyboard);
         return safeEditMessageText(ctx, updatedMessage);
-    }
+    },
 };
 
 const handleAction = async (ctx) => {
     const callbackData = ctx.callbackQuery.data;
     console.log("🔍 Empfangene Callback-Daten:", callbackData);
 
-    const [action, userId] = callbackData.split('_');
+    const [action, userId] = callbackData.split("_");
     const handler = actionHandlers[action];
 
     if (!handler) {
@@ -142,5 +141,5 @@ const handleAction = async (ctx) => {
 
 module.exports = {
     handleAction,
-    userLastCodeType // ✅ Exportiert, damit `messageHandlers.js` darauf zugreifen kann
+    userLastCodeType, // ✅ Exportiert, damit `messageHandlers.js` darauf zugreifen kann
 };
