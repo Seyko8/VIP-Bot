@@ -76,7 +76,7 @@ const actionHandlers = {
 
         // ✅ **Invite-Link generieren**
         const inviteLinks = [];
-        const inviteLinkCount = codeType === "100€" ? 4 : 1; // Reduziere die Anzahl der Links für 25€
+        const inviteLinkCount = codeType === "100€" ? 4 : 2; // Zwei Links für 50€
         for (let i = 0; i < inviteLinkCount; i++) {
             const inviteLink = await createInviteLink(ctx, userId, groupIds[i % groupIds.length], { expires_in: 86400, member_limit: 1 });
             if (!inviteLink) {
