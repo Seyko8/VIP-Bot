@@ -28,6 +28,7 @@ VIP-Pakete:
 👑 100€ VIP+ Paket: •Die oben genannten Punkte + Eine Speicherfunktion für die 24H Gruppe + Zusendung von allen Videos, die in die Hauptgruppe geschickt werden + Snapkanal, wo exklusive Snapchat-Gruppen von Worldskandi kommen 
 
 👉 Klicke auf den Knopf “Code einlösen”, um deinen Zugang zu erhalten.
+Wenn ihr eine Wallet habt, könnt ihr direkt mit eurer Wallet hier kaufen: @VIPWalletDirekt
 
 ⚠️ Codes bitte nicht über den Support versenden! ⚠️`, // ✅ **Hier fehlte das Komma `,` am Ende!**
   
