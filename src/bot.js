@@ -68,14 +68,19 @@ bot.on('message', async (ctx) => {
         return;
     }
 
+    console.log(`🔍 Nachricht erhalten von User: ${ctx.from.id}, Chat-Typ: ${ctx.chat.type}`);
+
     if (ctx.chat.type === 'private') {
+        console.log(`🔍 Private Nachricht empfangen. Verarbeitung...`);
         await handlePrivateMessage(ctx, ctx.userLastCodeType);
     } else if (ctx.chat.id.toString() === process.env.ADMIN_GROUP_ID) {
+        console.log(`🔍 Nachricht im Admin-Group-Chat empfangen. Verarbeitung...`);
         await handleSupportMessage(ctx);
     }
 });
 
 bot.catch((err, ctx) => {
+    console.error("❌ Fehler im Bot:", err);
     ctx.reply(MESSAGES.GENERAL_ERROR);
 });
 
