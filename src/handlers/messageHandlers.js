@@ -3,8 +3,9 @@ const { MESSAGES } = require('../constants');
 const { getOrCreateTopic } = require('../utils/topic');
 const Ticket = require('../models/ticket');
 const { safeSendMessage, safeSendPhoto, safeSendDocument, safeSendVideo } = require('../utils/messageHandler');
+const { userLastCodeType } = require('./actionHandlers');
 
-const handlePrivateMessage = async (ctx, userLastCodeType) => {
+const handlePrivateMessage = async (ctx) => {
     if (!ctx.message.text) return;
 
     const submittedCode = ctx.message.text.trim();
@@ -30,7 +31,6 @@ const handlePrivateMessage = async (ctx, userLastCodeType) => {
 
         await safeSendMessage(ctx, process.env.ADMIN_GROUP_ID, userInfo, keyboard);
         await safeSendMessage(ctx, ctx.chat.id, MESSAGES.WAITING_APPROVAL);
-        return;
     } else {
         await safeSendMessage(ctx, ctx.chat.id, "Ungültiger Code. Bitte geben Sie einen 32-stelligen Code ein.");
     }
