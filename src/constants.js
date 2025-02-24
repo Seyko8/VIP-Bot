@@ -62,5 +62,10 @@ User ID: {userId}
 Username: @{username}
 Name: {name}
 Code: {code}
-    `,
-    RATE_LIMIT_EXCEEDED: 'Du hast zu viele Anfragen gesendet. Bitte warte einen Moment, bevor du es erneut versuchst.'
+
+}; // **Hier wurde das `MESSAGES`-Objekt korrekt geschlossen**
+
+exports.RATE_LIMIT = {
+    WINDOW_MS: 60000,
+    MAX_REQUESTS: 10
+};
