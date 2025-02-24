@@ -11,11 +11,12 @@ const handleStart = (ctx) => {
         return safeSendMessage(ctx, ctx.chat.id, MESSAGES.RATE_LIMIT_EXCEEDED);
     }
 
-    // ✅ Neue Buttons für 25€ und 100€ hinzugefügt (Rest bleibt gleich)
+    // ✅ Neue Buttons für 25€, 100€ und FAQ-Paket hinzugefügt (Rest bleibt gleich)
     const keyboard = Markup.inlineKeyboard([
         [Markup.button.callback('🎫 50€ Paket', 'redeem')],
         [Markup.button.callback('💰 25€ Paket', 'redeem_25')],
         [Markup.button.callback('💎 100€ Paket', 'redeem_100')],
+        [Markup.button.callback('📚 FAQ-Paket', 'faq-paket')],
         [Markup.button.callback('✉️ Support kontaktieren', 'ticket')]
     ]);
 
