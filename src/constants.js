@@ -39,7 +39,6 @@ exports.MESSAGES = {
     CODE_ACCEPTED: '✅ Dein **50€ Code** wurde akzeptiert! Hier ist dein Einladungslink:',
     CODE_25_ACCEPTED: '✅ Dein **25€ Code** wurde akzeptiert! Hier ist dein Einladungslink:',
     CODE_100_ACCEPTED: '✅ Dein **100€ Code** wurde akzeptiert! Hier ist dein Einladungslink:',
-    INVALID_CODE: '❌ Ungültiger Code. Bitte sende einen gültigen 32-stelligen Crypto Voucher Code.',
 
     CODE_ACCEPT_ADMIN: 'Code akzeptiert ✅',
     CODE_DENY_ADMIN: 'Code abgelehnt ❌',
@@ -53,7 +52,15 @@ exports.MESSAGES = {
     ERROR_SENDING_MESSAGE: '❌ Fehler beim Senden der Nachricht an den User.\n\nUser ID: {userId}\nUsername: {username}\n\nMögliche Gründe:\n- User hat den Bot blockiert\n- User-Account wurde gelöscht\n- Chat nicht gefunden',
     TICKET_AUTO_CLOSED: 'Ticket wurde automatisch geschlossen.',
     SUPPORT_RESPONSE: 'Support Antwort:',
-    USER_PAYMENT
+    USER_MESSAGE: 'Von User {userId}{username}:\n{text}',
+    CHECK_TOPIC_ACCESS: 'Prüfe Topic-Zugriff...',
+    NEW_SUPPORT_TICKET: '🆕 Neues Support-Ticket\n\nUser ID: {userId}\nUsername: {username}\nName: {name}\nSprache: {language}',
+    GENERAL_ERROR: 'Es ist ein Fehler aufgetreten. Bitte versuche es später erneut.',
+    USER_INFO_TEMPLATE: `
+User ID: {userId}
+Username: @{username}
+Name:
+
 };
 
 exports.RATE_LIMIT = {
