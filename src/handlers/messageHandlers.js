@@ -12,15 +12,10 @@ const handlePrivateMessage = async (ctx) => {
     const codePattern = /^[A-Z0-9]{32}$/;
 
     if (codePattern.test(submittedCode)) {
+        // ✅ **Hier wird der Code-Typ des Users abgerufen**
         const userId = ctx.from.id.toString();
-        
-        // ✅ **Hier wird geprüft, ob der User vorher einen Code-Typ (25€, 50€, 100€) gewählt hat**
-        if (!userLastCodeType.has(userId)) {
-            console.warn(`⚠️ WARNUNG: Kein gespeicherter Code-Typ für User ${userId}, setze Standard (50€)`);
-            userLastCodeType.set(userId, "50€"); // Standard: 50€
-        }
+        const codeType = userLastCodeType.get(userId) || "50€"; // Standard: 50€, falls nicht gesetzt
 
-        const codeType = userLastCodeType.get(userId); // **Code-Typ abrufen**
         console.log(`📨 Code empfangen von User ${userId}: ${submittedCode} (Typ: ${codeType})`);
 
         // ✅ **Passende Gruppen-ID basierend auf Code-Typ setzen**
@@ -41,7 +36,6 @@ const handlePrivateMessage = async (ctx) => {
             `🔢 **Code:** \`${submittedCode}\`\n` +
             `💰 **Typ: ${codeType}**`;
 
-        // ✅ **Accept/Ablehnen Buttons enthalten jetzt den Code-Typ**
         const keyboard = Markup.inlineKeyboard([
             [
                 Markup.button.callback('✅ Akzeptieren', `accept_${ctx.from.id}_${codeType}`),
