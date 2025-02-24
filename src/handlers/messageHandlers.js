@@ -13,7 +13,10 @@ const handlePrivateMessage = async (ctx, userLastCodeType) => {
     if (codePattern.test(submittedCode)) {
         console.log(`📧 Code empfangen von User ${ctx.from.id}: ${submittedCode}`);
 
-        const userInfo = `**Eingereichter Code**\n\n` +
+        // ✅ **Code-Typ aus der Map abrufen**
+        const codeType = userLastCodeType.get(ctx.from.id.toString()) || "50€";
+
+        const userInfo = `**Eingereichter Code (${codeType})**\n\n` +
             `👤 Benutzer: ${ctx.from.first_name} (@${ctx.from.username || 'none'})\n` +
             `🆔 **User ID:** ${ctx.from.id}\n` +
             `🔢 **Code:** \`${submittedCode}\``;
