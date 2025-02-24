@@ -17,7 +17,7 @@ bot.command('start', handleStart);
 bot.command('close', handleClose);
 
 bot.action(/^redeem$/, handleAction);
-bot.action(/^(accept|deny|ticket|faq)_\d+$/, handleAction);
+bot.action(/^(accept|deny|ticket|faq-paket)_\d+$/, handleAction);
 
 // ✅ **Markierung für 25€, 50€, 100€ Codes**
 bot.action('redeem_25', async (ctx) => {
