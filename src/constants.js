@@ -53,8 +53,7 @@ exports.MESSAGES = {
     ERROR_SENDING_MESSAGE: '❌ Fehler beim Senden der Nachricht an den User.\n\nUser ID: {userId}\nUsername: {username}\n\nMögliche Gründe:\n- User hat den Bot blockiert\n- User-Account wurde gelöscht\n- Chat nicht gefunden',
     TICKET_AUTO_CLOSED: 'Ticket wurde automatisch geschlossen.',
     SUPPORT_RESPONSE: 'Support Antwort:',
-    
-    USER_MESSAGE: '📩 Deine Nachricht wurde gesendet.' // Falls gebraucht, sonst entfernen
+    USER_PAYMENT
 };
 
 exports.RATE_LIMIT = {
