@@ -29,6 +29,7 @@ exports.MESSAGES = {
     CODE_DENIED: 'Dein Code wurde leider abgelehnt. Bei Fragen kannst du gerne den Support kontaktieren.',
     MESSAGE_FORWARDED: 'Deine Nachricht wurde an den Support weitergeleitet.',
 
+    // ✅ NEUE NACHRICHTEN für 25€ und 100€ (Rest bleibt unverändert!)
     SEND_CODE: 'Bitte sende mir deinen **50€ Code**. Der Code muss in der Nachricht sein und darf kein Bild/Video sein.',
     SEND_25_CODE: 'Bitte sende mir deinen **25€ Code**. Der Code muss in der Nachricht sein und darf kein Bild/Video sein.',
     SEND_100_CODE: 'Bitte sende mir deinen **100€ Code**. Der Code muss in der Nachricht sein und darf kein Bild/Video sein.',
@@ -52,17 +53,18 @@ exports.MESSAGES = {
     ERROR_SENDING_MESSAGE: '❌ Fehler beim Senden der Nachricht an den User.\n\nUser ID: {userId}\nUsername: {username}\n\nMögliche Gründe:\n- User hat den Bot blockiert\n- User-Account wurde gelöscht\n- Chat nicht gefunden',
     TICKET_AUTO_CLOSED: 'Ticket wurde automatisch geschlossen.',
     SUPPORT_RESPONSE: 'Support Antwort:',
-    USER_MESSAGE: 'Von User {userId} @{username}:\n{text}',
+    USER_MESSAGE: 'Von User {userId}{username}:\n{text}',
     CHECK_TOPIC_ACCESS: 'Prüfe Topic-Zugriff...',
-    NEW_SUPPORT_TICKET: '🆕 Neues Support-Ticket\n\nUser ID: {userId}\nUsername: @{username}\nName: {name}\nSprache: {language}',
+    NEW_SUPPORT_TICKET: '🆕 Neues Support-Ticket\n\nUser ID: {userId}\nUsername: {username}\nName: {name}\nSprache: {language}',
     GENERAL_ERROR: 'Es ist ein Fehler aufgetreten. Bitte versuche es später erneut.',
-    
     USER_INFO_TEMPLATE: `
 User ID: {userId}
 Username: @{username}
 Name: {name}
-`
-}; // **Hier wurde das `MESSAGES`-Objekt korrekt geschlossen**
+Code: {code}
+    `,
+    RATE_LIMIT_EXCEEDED: 'Du hast zu viele Anfragen gesendet. Bitte warte einen Moment, bevor du es erneut versuchst.'
+};
 
 exports.RATE_LIMIT = {
     WINDOW_MS: 60000,
