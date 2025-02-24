@@ -29,7 +29,6 @@ exports.MESSAGES = {
     CODE_DENIED: 'Dein Code wurde leider abgelehnt. Bei Fragen kannst du gerne den Support kontaktieren.',
     MESSAGE_FORWARDED: 'Deine Nachricht wurde an den Support weitergeleitet.',
 
-    // ✅ NEUE NACHRICHTEN für 25€ und 100€ (Rest bleibt unverändert!)
     SEND_CODE: 'Bitte sende mir deinen **50€ Code**. Der Code muss in der Nachricht sein und darf kein Bild/Video sein.',
     SEND_25_CODE: 'Bitte sende mir deinen **25€ Code**. Der Code muss in der Nachricht sein und darf kein Bild/Video sein.',
     SEND_100_CODE: 'Bitte sende mir deinen **100€ Code**. Der Code muss in der Nachricht sein und darf kein Bild/Video sein.',
@@ -51,4 +50,5 @@ exports.MESSAGES = {
     ERROR_CLOSING_TICKET: 'Fehler beim Schließen des Tickets.',
     NO_TICKET_FOUND: 'Kein aktives Ticket gefunden.\n\nThread ID: {threadId}\nBitte prüfe die Datenbank oder erstelle ein neues Ticket.',
     MESSAGE_SENT_ADMIN: '✅ Nachricht wurde an den User weitergeleitet.',
-    ERROR_SENDING_MESSAGE: '❌ Fehler beim Senden der Nachricht an den User.\n\nUser ID:
+    ERROR_SENDING_MESSAGE: '❌ Fehler beim Senden der Nachricht an den User.\n\nUser ID: unbekannt'
+};
