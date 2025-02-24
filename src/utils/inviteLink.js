@@ -1,26 +1,18 @@
-const createInviteLink = async (ctx, userId, groupId) => {
-    if (!groupId) {
-        console.error("❌ Fehler: Gruppen-ID ist undefined!");
-        return null;
-    }
+const { Telegram } = require('telegraf');
 
-    const date = new Date().toISOString().split('T')[0];
-    const title = `${userId}-${date}`;
-    
+const createInviteLink = async (ctx, userId, chatId, options) => {
     try {
-        const link = await ctx.telegram.createChatInviteLink(
-            groupId,  // Hier wird die richtige Gruppen-ID genutzt
-            {
-                name: title,
-                member_limit: 1,
-                creates_join_request: false
-            }
-        );
+        const link = await ctx.telegram.createChatInviteLink(chatId, {
+            name: `${userId}-${new Date().toISOString().split('T')[0]}`,
+            ...options
+        });
         return link.invite_link;
     } catch (error) {
         console.error('❌ Fehler beim Erstellen des Einladungslinks:', error);
-        return null;
+        throw error;
     }
-}
+};
 
-module.exports = { createInviteLink };
+module.exports = {
+    createInviteLink
+};
