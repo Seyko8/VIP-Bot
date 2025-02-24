@@ -25,7 +25,7 @@ VIP-Pakete:
 
 💎 50€ VIP Paket: •Unser VIP Ordner Paket mit über 190 von euch gefragten OF, MYM und Breezels-Leaks + 24H Gruppe inklusive
 
-👑 100€ VIP+ Paket: •Die oben genannten Punkte + Eine Speicherfunktion für die 24H Gruppe + Zusendung von allen Videos, die in die Hauptgruppe geschickt werden + Snapkanal, wo exklusive Snapchat-Videos kommen 
+👑 100€ VIP+ Paket: •Die oben genannten Punkte + Eine Speicherfunktion für die 24H Gruppe + Zusendung von allen Videos, die in die Hauptgruppe geschickt werden + Snapkanal, wo exklusive Snapchat-Gruppen von Worldskandi kommen 
 
 👉 Klicke auf den Knopf “Code einlösen”, um deinen Zugang zu erhalten.
 
