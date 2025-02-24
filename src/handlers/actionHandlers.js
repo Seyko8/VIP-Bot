@@ -33,6 +33,7 @@ const actionHandlers = {
             console.error("❌ Fehler beim Erstellen des Support-Tickets!");
             return safeSendMessage(ctx, ctx.chat.id, MESSAGES.ERROR_CREATING_TICKET);
         }
+        console.log("✅ Support-Ticket erfolgreich erstellt mit threadId:", threadId);
         return safeSendMessage(ctx, ctx.chat.id, MESSAGES.TICKET_CREATED);
     },
 
