@@ -31,29 +31,11 @@ const handlePrivateMessage = async (ctx, userLastCodeType) => {
 
         await safeSendMessage(ctx, process.env.ADMIN_GROUP_ID, userInfo, keyboard);
         await safeSendMessage(ctx, ctx.chat.id, MESSAGES.WAITING_APPROVAL);
-        return;
-    }
-
-    try {
-        const threadId = await getOrCreateTopic(ctx, ctx.from.id);
-        if (threadId) {
-            const message = MESSAGES.USER_MESSAGE
-                .replace('{userId}', ctx.from.id)
-                .replace('{username}', ctx.from.username ? ` (@${ctx.from.username})` : '')
-                .replace('{text}', ctx.message.text);
-
-            await safeSendMessage(ctx, process.env.ADMIN_GROUP_ID, message, {
-                message_thread_id: threadId,
-                parse_mode: 'HTML'
-            });
-            await safeSendMessage(ctx, ctx.chat.id, MESSAGES.MESSAGE_FORWARDED);
-        }
-    } catch (error) {
-        console.error("❌ Fehler bei der Verarbeitung einer Support-Nachricht:", error);
+    } else {
+        await safeSendMessage(ctx, ctx.chat.id, "Ungültiger Code. Bitte geben Sie einen 32-stelligen Code ein.");
     }
 };
 
-// ✅ **Support-Handler für Support-Tickets**
 const handleSupportMessage = async (ctx) => {
     if (!ctx.message.message_thread_id) {
         return;
