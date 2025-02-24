@@ -13,7 +13,6 @@ services:
       - GROUP_ID_100_2=${GROUP_ID_100_2}  # ✅ Zweite Gruppen-ID für 100€ Nutzer
       - GROUP_ID_100_3=${GROUP_ID_100_3}  # ✅ Dritte Gruppen-ID für 100€ Nutzer
       - GROUP_ID_100_4=${GROUP_ID_100_4}  # ✅ Vierte Gruppen-ID für 100€ Nutzer
-      - GROUP_ID_100_5=${GROUP_ID_100_5}  # ✅ Fünfte Gruppen-ID für 100€ Nutzer
       - MONGODB_URI=${MONGODB_URI}
       - ADMIN_USERNAME=${ADMIN_USERNAME}
       - DB_HOST=db
