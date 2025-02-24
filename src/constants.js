@@ -1,12 +1,34 @@
 exports.MESSAGES = {
     WELCOME: `Willkommen bei unserem exklusiven VIP-Bereich! 🌟
-    
-    
-    🚀 Sichere dir jetzt deinen VIP-Zugang!
-    
-    👉 Bitte klicke auf den Knopf "Code einlösen" um deinen Zugang zu erhalten.
-    
-    ⚠️ Codes bitte nicht über Support versenden!!`,
+
+So wirst du Mitglied:
+
+1️⃣ Kaufe einen Crypto Voucher über diesen Link:
+👉 Crypto Voucher
+
+💡 (NUR CRYPTO-VOUCHER!)
+
+❗ Wichtig: Du kannst auf der Website mit PayPal zahlen.
+Falls kein Code generiert werden kann, versuche andere Seiten. ❗
+
+Deine Vorteile als VIP-Mitglied:
+
+✅ Regelmäßige Updates
+✅ Exklusive Inhalte
+✅ 24/7 Chat ohne Regeln
+✅Für VIP+ member mehrere Speicher Funktionen!
+‼️ Und vieles mehr!
+
+VIP-Pakete:
+
+💰 25€ 24H Paket: •Eine 24H Gruppe ohne Schließung und nie endenden Videos und Bilder! 
+💎 50€ VIP Paket: •Unser VIP Ordner Paket mit über 190 von euch gefragten OF,MYM und breezels leaks
+👑 100€ VIP+ Paket: •Die oben genannten Punkte + Eine Speicher Funktion für die 24H Gruppe  + Zusendung von allen Videos die in die Hauptgruppe geschickt werden!
+
+
+👉 Klicke auf den Knopf “Code einlösen”, um deinen Zugang zu erhalten.
+
+⚠️ Codes bitte nicht über den Support versenden! ⚠️
 
     WAITING_APPROVAL: 'Vielen Dank für deine Anfrage. Ein Admin wird sich schnellstmöglich um dich kümmern.',
     TICKET_CREATED: 'Dein Support-Ticket wurde erstellt. Bitte beschreibe dein Anliegen.',
