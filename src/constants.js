@@ -29,8 +29,8 @@ VIP-Pakete:
 
 👉 Klicke auf den Knopf “Code einlösen”, um deinen Zugang zu erhalten.
 
-⚠️ Codes bitte nicht über den Support versenden! ⚠️` // ✅ **Hier war der Fehler – das abschließende `"` war vorher nicht da!**
-
+⚠️ Codes bitte nicht über den Support versenden! ⚠️`, // ✅ **Hier fehlte das Komma `,` am Ende!**
+  
     WAITING_APPROVAL: 'Vielen Dank für deine Anfrage. Ein Admin wird sich schnellstmöglich um dich kümmern.',
     TICKET_CREATED: 'Dein Support-Ticket wurde erstellt. Bitte beschreibe dein Anliegen.',
     ERROR_CREATING_TICKET: 'Es gab einen Fehler beim Erstellen deines Tickets. Bitte versuche es später erneut.',
