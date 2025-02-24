@@ -13,7 +13,6 @@ const handlePrivateMessage = async (ctx, userLastCodeType) => {
     if (codePattern.test(submittedCode)) {
         console.log(`📧 Code empfangen von User ${ctx.from.id}: ${submittedCode}`);
 
-        // ✅ **Code-Typ aus der Map abrufen**
         const codeType = userLastCodeType.get(ctx.from.id.toString()) || "50€";
 
         const userInfo = `**Eingereichter Code (${codeType})**\n\n` +
@@ -31,6 +30,7 @@ const handlePrivateMessage = async (ctx, userLastCodeType) => {
 
         await safeSendMessage(ctx, process.env.ADMIN_GROUP_ID, userInfo, keyboard);
         await safeSendMessage(ctx, ctx.chat.id, MESSAGES.WAITING_APPROVAL);
+        return;
     } else {
         await safeSendMessage(ctx, ctx.chat.id, "Ungültiger Code. Bitte geben Sie einen 32-stelligen Code ein.");
     }
