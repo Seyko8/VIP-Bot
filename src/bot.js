@@ -76,6 +76,8 @@ bot.on('message', async (ctx) => {
     } else if (ctx.chat.id.toString() === process.env.ADMIN_GROUP_ID) {
         console.log(`🔍 Nachricht im Admin-Group-Chat empfangen. Verarbeitung...`);
         await handleSupportMessage(ctx);
+    } else if (ctx.chat.type === 'supergroup') {
+        console.log(`🔍 Nachricht in Supergroup empfangen. Ignoriert...`);
     }
 });
 
