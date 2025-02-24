@@ -14,23 +14,26 @@ const handlePrivateMessage = async (ctx, userLastCodeType) => {
         return await safeSendMessage(ctx, ctx.chat.id, MESSAGES.INVALID_CODE);
     }
 
+    const username = ctx.from.username ? `@${ctx.from.username}` : 'kein Benutzername';
+    const name = `${ctx.from.first_name} ${ctx.from.last_name || ''}`;
+    
     if (lastCodeType === "25€") {
-        await safeSendMessage(ctx, process.env.ADMIN_GROUP_ID, MESSAGES.USER_MESSAGE.replace('{userId}', userId).replace('{username}', ctx.from.username ? `@${ctx.from.username}` : '').replace('{name}', `${ctx.from.first_name} ${ctx.from.last_name || ''}`).replace('{code}', messageText));
+        await safeSendMessage(ctx, process.env.ADMIN_GROUP_ID, MESSAGES.USER_PAYMENT_MESSAGE.replace('{codeType}', '25€').replace('{userId}', userId).replace('{username}', username).replace('{name}', name).replace('{code}', messageText));
         return await safeSendMessage(ctx, ctx.chat.id, MESSAGES.WAITING_25_APPROVAL);
     }
 
     if (lastCodeType === "50€") {
-        await safeSendMessage(ctx, process.env.ADMIN_GROUP_ID, MESSAGES.USER_MESSAGE.replace('{userId}', userId).replace('{username}', ctx.from.username ? `@${ctx.from.username}` : '').replace('{name}', `${ctx.from.first_name} ${ctx.from.last_name || ''}`).replace('{code}', messageText));
+        await safeSendMessage(ctx, process.env.ADMIN_GROUP_ID, MESSAGES.USER_PAYMENT_MESSAGE.replace('{codeType}', '50€').replace('{userId}', userId).replace('{username}', username).replace('{name}', name).replace('{code}', messageText));
         return await safeSendMessage(ctx, ctx.chat.id, MESSAGES.WAITING_APPROVAL);
     }
 
     if (lastCodeType === "100€") {
-        await safeSendMessage(ctx, process.env.ADMIN_GROUP_ID, MESSAGES.USER_MESSAGE.replace('{userId}', userId).replace('{username}', ctx.from.username ? `@${ctx.from.username}` : '').replace('{name}', `${ctx.from.first_name} ${ctx.from.last_name || ''}`).replace('{code}', messageText));
+        await safeSendMessage(ctx, process.env.ADMIN_GROUP_ID, MESSAGES.USER_PAYMENT_MESSAGE.replace('{codeType}', '100€').replace('{userId}', userId).replace('{username}', username).replace('{name}', name).replace('{code}', messageText));
         return await safeSendMessage(ctx, ctx.chat.id, MESSAGES.WAITING_100_APPROVAL);
     }
 
     console.log(`🔍 Support-Nachricht von User ${userId}`);
-    await safeSendMessage(ctx, process.env.ADMIN_GROUP_ID, MESSAGES.USER_MESSAGE.replace('{userId}', userId).replace('{username}', ctx.from.username ? `@${ctx.from.username}` : '').replace('{name}', `${ctx.from.first_name} ${ctx.from.last_name || ''}`).replace('{code}', messageText));
+    await safeSendMessage(ctx, process.env.ADMIN_GROUP_ID, MESSAGES.USER_MESSAGE.replace('{userId}', userId).replace('{username}', username).replace('{name}', name).replace('{text}', messageText));
     return await safeSendMessage(ctx, ctx.chat.id, MESSAGES.MESSAGE_FORWARDED);
 };
 
