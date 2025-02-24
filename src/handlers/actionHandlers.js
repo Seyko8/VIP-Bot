@@ -26,9 +26,9 @@ const actionHandlers = {
         await safeSendMessage(ctx, ctx.chat.id, MESSAGES.SEND_CODE);
     },
 
-    ticket: async (ctx) => {
-        console.log(`📩 Support-Ticket wird für User: ${ctx.from.id} erstellt.`);
-        const threadId = await getOrCreateTopic(ctx, ctx.from.id);
+    ticket: async (ctx, userId) => {
+        console.log(`📩 Support-Ticket wird für User: ${userId} erstellt.`);
+        const threadId = await getOrCreateTopic(ctx, userId);
         if (!threadId) {
             console.error("❌ Fehler beim Erstellen des Support-Tickets!");
             return safeSendMessage(ctx, ctx.chat.id, MESSAGES.ERROR_CREATING_TICKET);
