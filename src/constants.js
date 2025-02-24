@@ -22,7 +22,9 @@ Deine Vorteile als VIP-Mitglied:
 VIP-Pakete:
 
 💰 25€ 24H Paket: •Eine 24H Gruppe ohne Schließung und nie endende Videos und Bilder! 
+
 💎 50€ VIP Paket: •Unser VIP-Ordner-Paket mit über 190 von euch gefragten OF, MYM und Breezels-Leaks
+
 👑 100€ VIP+ Paket: •Die oben genannten Punkte + Eine Speicherfunktion für die 24H Gruppe + Zusendung von allen Videos, die in die Hauptgruppe geschickt werden!
 
 👉 Klicke auf den Knopf “Code einlösen”, um deinen Zugang zu erhalten.
